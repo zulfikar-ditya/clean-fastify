@@ -1,13 +1,13 @@
-import { DatatableType } from "@app/api/types/datatable";
-import { SortDirection } from "@app/api/types/sort-direction";
 import { paginationLength } from "@default/pagination-length";
 import { defaultSort } from "@default/sort";
 import { PgColumn } from "drizzle-orm/pg-core";
-import { Context } from "hono";
+import { DatatableType } from "@app/api/types/datatable";
+import { SortDirection } from "@app/api/types/sort-direction";
+import { FastifyRequest } from "fastify";
 
 export class DatatableToolkit {
-	static parseFilter(ctx: Context): DatatableType {
-		const query = ctx.req.query();
+	static parseFilter(request: FastifyRequest): DatatableType {
+		const query = request.query as Record<string, string>;
 
 		const page: number = query.page ? parseInt(query.page, 10) : 1;
 		const perPage: number = query.perPage
