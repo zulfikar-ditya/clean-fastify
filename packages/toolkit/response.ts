@@ -1,79 +1,62 @@
-import { Context } from "hono";
-import { ContentfulStatusCode } from "hono/utils/http-status";
+import { FastifyReply } from "fastify";
 
 export class ResponseToolkit {
 	static success<T>(
-		ctx: Context,
+		reply: FastifyReply,
 		data: T | null,
 		message: string = "Success",
-		statusCode: ContentfulStatusCode,
+		statusCode: number = 200,
 	) {
-		return ctx.json(
-			{
-				status: statusCode,
-				success: true,
-				message,
-				data,
-			},
-			{ status: statusCode },
-		);
+		return reply.status(statusCode).send({
+			status: statusCode,
+			success: true,
+			message,
+			data,
+		});
 	}
 
-	static error(
-		ctx: Context,
-		message: string,
-		statusCode: ContentfulStatusCode = 400,
-	) {
-		return ctx.json(
-			{
-				status: statusCode,
-				success: false,
-				message,
-			},
-			{ status: statusCode },
-		);
+	static error(reply: FastifyReply, message: string, statusCode: number = 400) {
+		return reply.status(statusCode).send({
+			status: statusCode,
+			success: false,
+			message,
+		});
 	}
 
-	static notFound(ctx: Context, message: string = "Resource not found") {
-		return this.error(ctx, message, 404);
+	static notFound(reply: FastifyReply, message: string = "Resource not found") {
+		return this.error(reply, message, 404);
 	}
 
-	static unauthorized(ctx: Context, message: string = "Unauthorized") {
-		return this.error(ctx, message, 401);
+	static unauthorized(reply: FastifyReply, message: string = "Unauthorized") {
+		return this.error(reply, message, 401);
 	}
 
 	static response<T>(
-		ctx: Context,
+		reply: FastifyReply,
 		success: boolean,
 		data: T | null,
 		message: string = "Success",
-		statusCode: ContentfulStatusCode = 200,
+		statusCode: number = 200,
 	) {
-		return ctx.json(
-			{
-				status: statusCode,
-				success,
-				message,
-				data,
-			},
-			{ status: statusCode },
-		);
+		return reply.status(statusCode).send({
+			status: statusCode,
+			success,
+			message,
+			data,
+		});
 	}
 
 	static validationError(
-		ctx: Context,
+		reply: FastifyReply,
 		errors: { [key: string]: string }[],
 		message: string = "Validation failed",
-		statusCode: ContentfulStatusCode = 422,
+		statusCode: number = 422,
 	) {
-		return ctx.json(
-			{
-				status: statusCode,
-				success: false,
-				message,
-				errors,
-			},
-			{ status: statusCode },
-		);
+		return reply.status(statusCode).send({
+			status: statusCode,
+			success: false,
+			message,
+			errors,
+		});
 	}
 }

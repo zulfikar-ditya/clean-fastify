@@ -9,3 +9,6 @@ export * from "./toolkit/index";
 
 export * from "./mail/mail.service";
 export * from "./mail/transport.mail";
+
+export * from "./plugins/auth.plugin";
+export * from "./plugins/cors.plugin";
