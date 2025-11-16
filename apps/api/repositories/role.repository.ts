@@ -1,12 +1,15 @@
 import { db, role_permissionsTable, rolesTable } from "infra/postgres/index";
-import { DatatableType, SortDirection } from "../types/datatable";
+import { DatatableType } from "../types/datatable";
 import { and, asc, desc, eq, ilike, ne, not, or, SQL } from "drizzle-orm";
 import { defaultSort } from "@default/sort";
 import { DatatableToolkit } from "@toolkit/datatable";
 import { PaginationResponse } from "../types/pagination";
-import { UnprocessableEntityError } from "../errors";
-import { NotFoundError } from "../errors/not-found-error";
 import { DbTransaction } from ".";
+import {
+	NotFoundError,
+	UnprocessableEntityError,
+} from "../error/custom.errors";
+import { SortDirection } from "../types/sort-direction";
 
 export type RoleList = {
 	id: string;

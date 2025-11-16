@@ -47,12 +47,96 @@ export const AuthHandler = {
 			validation.password,
 		);
 		const token = await _reply.jwtSign({
-			id: service[0].id,
+			id: service.id,
 		});
 
 		return ResponseToolkit.success(_reply, {
 			message: "Login successful",
-			data: { token, user: service[0] },
+			data: { token, user: service },
+		});
+	},
+
+	register: async (_request: FastifyRequest, _reply: FastifyReply) => {
+		const payload = _request.body;
+		const validation = await vine.validate({
+			schema: AuthSchema.RegisterSchema,
+			data: payload,
+		});
+
+		await AuthService.register({
+			name: validation.name,
+			email: validation.email,
+			password: validation.password,
+		});
+
+		return ResponseToolkit.success(_reply, {
+			message: "Registration successful. Please verify your email.",
+		});
+	},
+
+	verifyEmail: async (_request: FastifyRequest, _reply: FastifyReply) => {
+		const payload = _request.body;
+		const validation = await vine.validate({
+			schema: AuthSchema.VerifyEmailSchema,
+			data: payload,
+		});
+
+		await AuthService.verifyEmail({
+			token: validation.token,
+		});
+
+		return ResponseToolkit.success(_reply, {
+			message: "Email verified successfully.",
+		});
+	},
+
+	resentVerificationEmail: async (
+		_request: FastifyRequest,
+		_reply: FastifyReply,
+	) => {
+		const payload = _request.body;
+		const validation = await vine.validate({
+			schema: AuthSchema.ResentVerificationEmailSchema,
+			data: payload,
+		});
+
+		await AuthService.resendVerification({
+			email: validation.email,
+		});
+
+		return ResponseToolkit.success(_reply, {
+			message: "Verification email resent successfully.",
+		});
+	},
+
+	forgotPassword: async (_request: FastifyRequest, _reply: FastifyReply) => {
+		const payload = _request.body;
+		const validation = await vine.validate({
+			schema: AuthSchema.ForgotPasswordSchema,
+			data: payload,
+		});
+
+		await AuthService.forgotPassword(validation.email);
+
+		return ResponseToolkit.success(_reply, {
+			message: "Password reset email sent successfully.",
+		});
+	},
+
+	resetPassword: async (_request: FastifyRequest, _reply: FastifyReply) => {
+		const payload = _request.body;
+		const validation = await vine.validate({
+			schema: AuthSchema.ResetPasswordSchema,
+			data: payload,
+		});
+
+		await AuthService.resetPassword({
+			token: validation.token,
+			newPassword: validation.password,
+		});
+
+		return ResponseToolkit.success(_reply, {
+			message: "Success reset your password",
 		});
 	},
 };
