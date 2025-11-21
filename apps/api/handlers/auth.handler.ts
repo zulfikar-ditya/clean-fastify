@@ -130,10 +130,7 @@ export const AuthHandler = {
 			data: payload,
 		});
 
-		await AuthService.resetPassword({
-			token: validation.token,
-			newPassword: validation.password,
-		});
+		await AuthService.resetPassword(validation.token, validation.password);
 
 		return ResponseToolkit.success(_reply, {
 			message: "Success reset your password",
