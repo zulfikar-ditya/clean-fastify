@@ -116,7 +116,7 @@ export const RoleRepository = () => {
 		create: async (
 			data: {
 				name: string;
-				permission_ids: string[];
+				permissionIds: string[];
 			},
 			tx?: DbTransaction,
 		): Promise<void> => {
@@ -143,8 +143,8 @@ export const RoleRepository = () => {
 				.returning({ id: rolesTable.id })
 				.execute();
 
-			if (data.permission_ids.length > 0) {
-				const rolePermissions = data.permission_ids.map((permissionId) => ({
+			if (data.permissionIds.length > 0) {
+				const rolePermissions = data.permissionIds.map((permissionId) => ({
 					roleId: role[0].id,
 					permissionId,
 				}));
@@ -232,7 +232,7 @@ export const RoleRepository = () => {
 
 		update: async (
 			id: string,
-			data: { name: string; permission_ids: string[] },
+			data: { name: string; permissionIds: string[] },
 			tx?: DbTransaction,
 		): Promise<void> => {
 			const database = tx || dbInstance;
@@ -271,8 +271,8 @@ export const RoleRepository = () => {
 				.where(eq(role_permissionsTable.roleId, id))
 				.execute();
 
-			if (data.permission_ids.length > 0) {
-				const rolePermissions = data.permission_ids.map((permissionId) => ({
+			if (data.permissionIds.length > 0) {
+				const rolePermissions = data.permissionIds.map((permissionId) => ({
 					roleId: id,
 					permissionId,
 				}));

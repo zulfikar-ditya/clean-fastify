@@ -5,6 +5,7 @@ import fastifyJwt from "@fastify/jwt";
 import fastifyRedis from "@fastify/redis";
 import corsPlugin from "packages/plugins/cors.plugin";
 import authPlugin from "packages/plugins/auth.plugin";
+import superuserPlugin from "packages/plugins/superuser.plugin";
 import { errorHandler } from "./error/error.handler";
 import { createLoggerConfig } from "packages/logger/logger";
 
@@ -19,6 +20,7 @@ app.register(fastifyJwt, {
 
 app.register(corsPlugin);
 app.register(authPlugin);
+app.register(superuserPlugin);
 
 app.register(fastifyRedis, {
 	host: RedisConfig.REDIS_HOST,
