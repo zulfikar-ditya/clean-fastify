@@ -40,7 +40,7 @@ export type UserCreate = {
 	password: string;
 	status?: UserStatusEnum;
 	remark?: string;
-	role_ids?: string[];
+	roleIds?: string[];
 };
 
 export type UserDetail = {
@@ -254,13 +254,13 @@ export const UserRepository = () => {
 				})
 				.returning();
 
-			if (data.role_ids && data.role_ids.length > 0) {
+			if (data.roleIds && data.roleIds.length > 0) {
 				if (user.length > 0) {
 					const userId = user[0].id;
 					const userRoles: {
 						userId: string;
 						roleId: string;
-					}[] = data.role_ids.map((roleId) => ({
+					}[] = data.roleIds.map((roleId) => ({
 						userId,
 						roleId,
 					}));
@@ -351,7 +351,7 @@ export const UserRepository = () => {
 				.where(eq(usersTable.id, userId));
 
 			// remove all role or adding new role
-			if (data.role_ids && data.role_ids.length > 0) {
+			if (data.roleIds && data.roleIds.length > 0) {
 				await database
 					.delete(user_rolesTable)
 					.where(eq(user_rolesTable.userId, userId));
@@ -359,7 +359,7 @@ export const UserRepository = () => {
 				const userRoles: {
 					userId: string;
 					roleId: string;
-				}[] = data.role_ids.map((roleId) => ({
+				}[] = data.roleIds.map((roleId) => ({
 					userId,
 					roleId,
 				}));

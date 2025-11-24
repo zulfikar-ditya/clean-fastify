@@ -41,7 +41,6 @@ export const ProfileHandler = {
 				email: validation.email,
 			},
 		);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		await _request.server.clearUserCache((_request.user as UserInformation).id);
 
 		return ResponseToolkit.success<UserInformation>(
@@ -64,7 +63,6 @@ export const ProfileHandler = {
 			password: validation.password,
 		});
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		await _request.server.clearUserCache((_request.user as UserInformation).id);
 
 		return ResponseToolkit.success(
