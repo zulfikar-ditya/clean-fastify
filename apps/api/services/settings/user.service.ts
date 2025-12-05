@@ -2,8 +2,8 @@ import { UnprocessableEntityError } from "@app/api/error/custom.errors";
 import { UserDetail, UserList, UserRepository } from "@app/api/repositories";
 import { DatatableType } from "@app/api/types/datatable";
 import { PaginationResponse } from "@app/api/types/pagination";
-import { db } from "@postgres/index";
-import { and, eq, isNull, not } from "drizzle-orm";
+import { db, rolesTable } from "@postgres/index";
+import { and, eq, inArray, isNull, not } from "drizzle-orm";
 import { usersTable } from "../../../../infra/postgres/user";
 import { Hash } from "@security/hash";
 
@@ -20,12 +20,36 @@ export const UserService = {
 		password: string;
 		roleIds: string[];
 	}): Promise<void> => {
-		const isEmailExists = await UserRepository().findByEmail(data.email);
+		const isEmailExists = await db.query.users.findFirst({
+			where: and(
+				eq(usersTable.email, data.email),
+				isNull(usersTable.deleted_at),
+			),
+			columns: {
+				id: true,
+			},
+		});
+
 		if (isEmailExists) {
 			throw new UnprocessableEntityError("Validation error", [
 				{
 					field: "email",
 					message: "Email already exists",
+				},
+			]);
+		}
+
+		// validate the user roles
+		const validRoles = await db
+			.select()
+			.from(rolesTable)
+			.where(inArray(rolesTable.id, data.roleIds));
+
+		if (validRoles.length !== data.roleIds.length) {
+			throw new UnprocessableEntityError("Validation error", [
+				{
+					field: "roleIds",
+					message: "One or more roles are invalid",
 				},
 			]);
 		}
@@ -55,6 +79,21 @@ export const UserService = {
 				{
 					field: "email",
 					message: "Email already exists",
+				},
+			]);
+		}
+
+		// validate the user roles
+		const validRoles = await db
+			.select()
+			.from(rolesTable)
+			.where(inArray(rolesTable.id, data.roleIds));
+
+		if (validRoles.length !== data.roleIds.length) {
+			throw new UnprocessableEntityError("Validation error", [
+				{
+					field: "roleIds",
+					message: "One or more roles are invalid",
 				},
 			]);
 		}

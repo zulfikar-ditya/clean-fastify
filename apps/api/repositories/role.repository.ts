@@ -149,7 +149,7 @@ export const RoleRepository = () => {
 					permissionId,
 				}));
 
-				await dbInstance.insert(role_permissionsTable).values(rolePermissions);
+				await database.insert(role_permissionsTable).values(rolePermissions);
 			}
 		},
 
