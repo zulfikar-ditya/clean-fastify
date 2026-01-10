@@ -1,4 +1,4 @@
-import { UnprocessableEntityError } from "@app/api/error/custom.errors";
+import { UnprocessableEntityError } from "packages/error/custom.errors";
 import { UserDetail, UserList, UserRepository } from "@app/api/repositories";
 import { DatatableType } from "@app/api/types/datatable";
 import { PaginationResponse } from "@app/api/types/pagination";

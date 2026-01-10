@@ -1,4 +1,4 @@
-import { UnprocessableEntityError } from "@app/api/error/custom.errors";
+import { UnprocessableEntityError } from "packages/error/custom.errors";
 import {
 	RoleDetail,
 	RoleList,

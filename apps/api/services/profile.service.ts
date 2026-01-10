@@ -4,7 +4,7 @@ import { usersTable } from "@postgres/user";
 import {
 	UnauthorizedError,
 	UnprocessableEntityError,
-} from "../error/custom.errors";
+} from "../../../packages/error/custom.errors";
 import { Hash } from "@security/hash";
 import { UserInformation } from "../types/UserInformation";
 

@@ -1,5 +1,5 @@
 import { Hash } from "@security/hash";
-import { UnprocessableEntityError } from "../error/custom.errors";
+import { UnprocessableEntityError } from "../../../packages/error/custom.errors";
 import { ForgotPasswordRepository, UserRepository } from "../repositories";
 import { UserInformation } from "../types/UserInformation";
 import { usersTable } from "@postgres/user";

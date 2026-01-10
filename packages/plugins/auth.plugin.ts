@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 import { ResponseToolkit } from "@toolkit/response";
 import { UserInformationCacheKey } from "@cache/*";
-import { UserRepository } from "apps/api/repositories/user.repository";
+import { UserRepository } from "@postgres/repositories";
 
 // eslint-disable-next-line @typescript-eslint/require-await
 async function authPlugin(fastify: FastifyInstance) {

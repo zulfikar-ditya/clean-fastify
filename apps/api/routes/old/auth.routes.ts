@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { AuthHandler } from "../handlers";
+import { AuthHandler } from "../../handlers";
 
 export const registerAuthRoutes = (app: FastifyInstance) => {
 	app.post("/auth/login", AuthHandler.login);

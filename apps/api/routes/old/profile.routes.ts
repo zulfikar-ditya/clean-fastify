@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { ProfileHandler } from "../handlers";
+import { ProfileHandler } from "../../handlers";
 
 export const registerProfileRoutes = (app: FastifyInstance) => {
 	app.register(

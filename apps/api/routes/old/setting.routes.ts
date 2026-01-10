@@ -1,8 +1,8 @@
 import { FastifyInstance } from "fastify";
-import { SelectHandler } from "../handlers/settings/select.handler";
-import { PermissionHandler } from "../handlers/settings/permission.handler";
-import { RoleHandler } from "../handlers/settings/role.handler";
-import { UserHandler } from "../handlers/settings/user.handler";
+import { SelectHandler } from "../../handlers/settings/select.handler";
+import { PermissionHandler } from "../../handlers/settings/permission.handler";
+import { RoleHandler } from "../../handlers/settings/role.handler";
+import { UserHandler } from "../../handlers/settings/user.handler";
 
 export const registerSettingRoutes = (app: FastifyInstance) => {
 	app.register(
