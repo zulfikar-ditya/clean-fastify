@@ -7,6 +7,11 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { createLoggerConfig } from "@packages/logger/logger";
 import { RedisConfig } from "@config/redis.config";
+import {
+	serializerCompiler,
+	validatorCompiler,
+	type ZodTypeProvider,
+} from "fastify-type-provider-zod";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -14,7 +19,7 @@ const __dirname = dirname(__filename);
 export function createAppInstance() {
 	const app = fastify({
 		logger: createLoggerConfig(),
-	});
+	}).withTypeProvider<ZodTypeProvider>();
 
 	// PLUGIN DECORATOR =====================================================
 	app.register(fastifyJwt, {
@@ -28,15 +33,18 @@ export function createAppInstance() {
 		db: RedisConfig.REDIS_DB,
 	});
 
+	app.setValidatorCompiler(validatorCompiler);
+	app.setSerializerCompiler(serializerCompiler);
+
 	// autoload plugins =========================
 	app.register(fastifyAutoload, {
-		dir: join(__dirname, "../../packages/plugins/app"),
+		dir: join(__dirname, "../../packages/plugins/externals"),
 		cascadeHooks: true,
 		autoHooks: true,
 	});
 
 	app.register(fastifyAutoload, {
-		dir: join(__dirname, "../../packages/plugins/externals"),
+		dir: join(__dirname, "../../packages/plugins/app"),
 		cascadeHooks: true,
 		autoHooks: true,
 	});

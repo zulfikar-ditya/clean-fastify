@@ -16,21 +16,19 @@ import { StrToolkit } from "@toolkit/string";
 import { verificationTokenLifetime } from "@default/token-lifetime";
 import { AppConfig } from "config/app.config";
 import { sendEmailQueue } from "@app/worker/queue/send-email.queue";
+import { injectable } from "@packages/di";
 
-export const AuthService = {
-	login: async (email: string, password: string): Promise<UserInformation> => {
-		const user = await UserRepository().findByEmail(email);
+@injectable()
+export class AuthService {
+	constructor(
+		private userRepository: UserRepository,
+		private forgotPasswordRepository: ForgotPasswordRepository,
+	) {}
+
+	async login(email: string, password: string): Promise<UserInformation> {
+		const user = await this.userRepository.findByEmail(email);
 
 		if (user.email_verified_at === null) {
-			// await userActivitiesService.trackActivity({
-			// 	user_id: user.id,
-			// 	action: "failed_login",
-			// 	resource: "auth/login",
-			// 	ip_address: ipAddress,
-			// 	metadata: { reason: "email not verified" },
-			// 	user_agent: userAgent,
-			// });
-
 			throw new UnprocessableEntityError("Validation error", [
 				{
 					field: "email",
@@ -40,15 +38,6 @@ export const AuthService = {
 		}
 
 		if (user.status !== "active") {
-			// await userActivitiesService.trackActivity({
-			// 	user_id: user.id,
-			// 	action: "failed_login",
-			// 	resource: "auth/login",
-			// 	ip_address: ipAddress,
-			// 	metadata: { reason: "account not active" },
-			// 	user_agent: userAgent,
-			// });
-
 			throw new UnprocessableEntityError("Validation error", [
 				{
 					field: "email",
@@ -59,15 +48,6 @@ export const AuthService = {
 
 		const isPasswordValid = await Hash.compareHash(password, user.password);
 		if (!isPasswordValid) {
-			// await userActivitiesService.trackActivity({
-			// 	user_id: user.id,
-			// 	action: "failed_login",
-			// 	resource: "auth/login",
-			// 	ip_address: ipAddress,
-			// 	metadata: { reason: "invalid password" },
-			// 	user_agent: userAgent,
-			// });
-
 			throw new UnprocessableEntityError("Validation error", [
 				{
 					field: "email",
@@ -76,25 +56,15 @@ export const AuthService = {
 			]);
 		}
 
-		// // Track successful login
-		// await userActivitiesService.trackActivity({
-		// 	user_id: user.id,
-		// 	action: "login",
-		// 	resource: "auth/login",
-		// 	ip_address: ipAddress,
-		// 	metadata: { status: "success" },
-		// 	user_agent: userAgent,
-		// });
+		return await this.userRepository.UserInformation(user.id);
+	}
 
-		return await UserRepository().UserInformation(user.id);
-	},
-
-	register: async (payload: {
+	async register(payload: {
 		name: string;
 		email: string;
 		password: string;
-	}): Promise<void> => {
-		const user = await UserRepository().db.query.users.findFirst({
+	}): Promise<void> {
+		const user = await this.userRepository.db.query.users.findFirst({
 			where: and(
 				eq(usersTable.email, payload.email),
 				isNull(usersTable.deleted_at),
@@ -110,7 +80,6 @@ export const AuthService = {
 			]);
 		}
 
-		// Hash the password
 		const hashedPassword = await Hash.generateHash(payload.password);
 		await db.transaction(async (trx) => {
 			const newUser = await trx
@@ -141,24 +110,11 @@ export const AuthService = {
 					verification_url: `${AppConfig.CLIENT_URL}/auth/verify-email?token=${token}`,
 				},
 			});
-
-			// // Track registration activity
-			// await UserActivitiesService.trackActivity({
-			// 	user_id: newUser[0].id,
-			// 	action: "register",
-			// 	resource: "user",
-			// 	ip_address: context?.ipAddress || "",
-			// 	user_agent: context?.userAgent || "",
-			// 	metadata: {
-			// 		email: payload.email,
-			// 		name: payload.name,
-			// 	},
-			// });
 		});
-	},
+	}
 
-	resendVerification: async (payload: { email: string }): Promise<void> => {
-		const user = await UserRepository().findByEmail(payload.email);
+	async resendVerification(payload: { email: string }): Promise<void> {
+		const user = await this.userRepository.findByEmail(payload.email);
 		if (!user) {
 			return;
 		}
@@ -191,22 +147,10 @@ export const AuthService = {
 					verification_url: `${AppConfig.CLIENT_URL}/auth/verify-email?token=${token}`,
 				},
 			});
-
-			// Track resend verification activity
-			// await userActivitiesService.trackActivity({
-			// 	user_id: user.id,
-			// 	action: "resend_verification",
-			// 	resource: "email_verification",
-			// 	ip_address: context?.ipAddress || "",
-			// 	user_agent: context?.userAgent || "",
-			// 	metadata: {
-			// 		email: payload.email,
-			// 	},
-			// });
 		});
-	},
+	}
 
-	verifyEmail: async (payload: { token: string }): Promise<void> => {
+	async verifyEmail(payload: { token: string }): Promise<void> {
 		const verificationRecord = await db
 			.select()
 			.from(email_verificationsTable)
@@ -232,23 +176,11 @@ export const AuthService = {
 			await trx
 				.delete(email_verificationsTable)
 				.where(eq(email_verificationsTable.id, verificationRecord.id));
-
-			// // Track email verification activity
-			// await userActivitiesService.trackActivity({
-			// 	user_id: verificationRecord.user_id,
-			// 	action: "verify_email",
-			// 	resource: "email_verification",
-			// 	ip_address: context?.ipAddress || "",
-			// 	user_agent: context?.userAgent || "",
-			// 	metadata: {
-			// 		token_id: verificationRecord.id.toString(),
-			// 	},
-			// });
 		});
-	},
+	}
 
 	async forgotPassword(email: string): Promise<void> {
-		const user = await UserRepository().db.query.users.findFirst({
+		const user = await this.userRepository.db.query.users.findFirst({
 			where: eq(usersTable.email, email),
 		});
 		if (!user) {
@@ -256,7 +188,7 @@ export const AuthService = {
 		}
 
 		const token = StrToolkit.random(255);
-		await ForgotPasswordRepository().create({
+		await this.forgotPasswordRepository.create({
 			user_id: user.id,
 			token,
 		});
@@ -272,22 +204,11 @@ export const AuthService = {
 				reset_password_url: `${AppConfig.CLIENT_URL}/auth/reset-password?token=${token}`,
 			},
 		});
-
-		// // Track forgot password activity
-		// await userActivitiesService.trackActivity({
-		// 	user_id: user.id,
-		// 	action: "request_password_reset",
-		// 	resource: "password_reset",
-		// 	ip_address: context?.ipAddress || "",
-		// 	user_agent: context?.userAgent || "",
-		// 	metadata: {
-		// 		email,
-		// 	},
-		// });
-	},
+	}
 
 	async resetPassword(token: string, newPassword: string): Promise<void> {
-		const passwordReset = await ForgotPasswordRepository().findByToken(token);
+		const passwordReset =
+			await this.forgotPasswordRepository.findByToken(token);
 		if (!passwordReset) {
 			throw new UnprocessableEntityError("Validation error", [
 				{
@@ -297,7 +218,7 @@ export const AuthService = {
 			]);
 		}
 
-		const user = await UserRepository().db.query.users.findFirst({
+		const user = await this.userRepository.db.query.users.findFirst({
 			where: eq(usersTable.id, passwordReset.user_id),
 		});
 		if (!user) {
@@ -321,18 +242,6 @@ export const AuthService = {
 			await trx
 				.delete(password_reset_tokensTable)
 				.where(eq(password_reset_tokensTable.user_id, user.id));
-
-			// Track password reset activity
-			// await userActivitiesService.trackActivity({
-			// 	user_id: user.id,
-			// 	action: "reset_password",
-			// 	resource: "password_reset",
-			// 	ip_address: context?.ipAddress || "",
-			// 	user_agent: context?.userAgent || "",
-			// 	metadata: {
-			// 		token_id: passwordReset.id.toString(),
-			// 	},
-			// });
 		});
-	},
-};
+	}
+}

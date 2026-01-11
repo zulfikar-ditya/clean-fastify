@@ -1,40 +1,33 @@
 import { AppConfig } from "@config/app.config";
 import { DateToolkit, ResponseToolkit } from "@packages/toolkit";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { ZodTypeProvider } from "fastify-type-provider-zod";
+import { z } from "zod";
 
 export default function (fastify: FastifyInstance) {
-	fastify.get(
+	fastify.withTypeProvider<ZodTypeProvider>().get(
 		"/",
 		{
 			schema: {
 				tags: ["Index"],
 				description: "Returns a welcome message indicating the API is running.",
 				response: {
-					200: {
-						type: "object",
-						properties: {
-							status: { type: "number" },
-							success: { type: "boolean" },
-							message: { type: "string" },
-							data: {
-								type: "object",
-								properties: {
-									AppName: { type: "string" },
-									AppTimezone: { type: "string" },
-									AppEnvironment: { type: "string" },
-									CurrentTime: { type: "string" },
-								},
-							},
-						},
-					},
-					500: {
-						type: "object",
-						properties: {
-							error: { type: "string" },
-							message: { type: "string" },
-							statusCode: { type: "number" },
-						},
-					},
+					200: z.object({
+						status: z.number(),
+						success: z.boolean(),
+						message: z.string(),
+						data: z.object({
+							AppName: z.string(),
+							AppTimezone: z.string(),
+							AppEnvironment: z.string(),
+							CurrentTime: z.string(),
+						}),
+					}),
+					500: z.object({
+						status: z.number(),
+						success: z.boolean(),
+						message: z.string(),
+					}),
 				},
 			},
 		},

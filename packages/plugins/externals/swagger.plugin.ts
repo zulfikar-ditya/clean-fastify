@@ -2,10 +2,12 @@ import fastifySwagger from "@fastify/swagger";
 import fp from "fastify-plugin";
 import ScalarApiReference from "@scalar/fastify-api-reference";
 import { AppConfig } from "@config/app.config";
+import { jsonSchemaTransform } from "fastify-type-provider-zod";
 
 export default fp(
 	async function (fastify) {
-		fastify.register(fastifySwagger, {
+		// Register Swagger first (without await)
+		await fastify.register(fastifySwagger, {
 			openapi: {
 				info: {
 					title: AppConfig.APP_NAME,
@@ -13,7 +15,7 @@ export default fp(
 				},
 				components: {
 					securitySchemes: {
-						bearerAuth: {
+						BearerAuth: {
 							type: "http",
 							scheme: "bearer",
 							bearerFormat: "JWT",
@@ -23,24 +25,20 @@ export default fp(
 					},
 				},
 			},
+			transform: jsonSchemaTransform,
 		});
 
+		// Register Scalar after Swagger
 		await fastify.register(ScalarApiReference, {
 			routePrefix: "/docs",
 			configuration: {
 				title: AppConfig.APP_NAME,
 				theme: "fastify",
 			},
-			logLevel: "silent",
-			hooks: {
-				onRequest: function (request, reply, done) {
-					done();
-				},
-				preHandler: function (request, reply, done) {
-					done();
-				},
-			},
 		});
 	},
-	{ name: "swagger-plugin" },
+	{
+		name: "swagger-plugin",
+		dependencies: [],
+	},
 );

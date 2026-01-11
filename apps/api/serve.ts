@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { AppConfig } from "config/app.config";
 import { createAppInstance } from "./app";
 

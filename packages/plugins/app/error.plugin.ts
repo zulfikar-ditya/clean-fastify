@@ -1,5 +1,4 @@
 import { ResponseToolkit } from "@toolkit/response";
-import { errors } from "@vinejs/vine";
 import fp from "fastify-plugin";
 import Fastify from "fastify";
 import {
@@ -15,23 +14,18 @@ export default fp(async function (fastify) {
 			return;
 		}
 
-		if (error instanceof HttpError) {
-			ResponseToolkit.error(reply, error.message, error.statusCode);
+		if (error.validation) {
+			const errors = error.validation.map((err) => ({
+				[err.instancePath.replace(/^\//, "") || err.schemaPath || "body"]:
+					err.message || "Invalid value",
+			}));
+
+			ResponseToolkit.validationError(reply, errors);
 			return;
 		}
 
-		// Vine validation error
-		if (error instanceof errors.E_VALIDATION_ERROR) {
-			ResponseToolkit.validationError(
-				reply,
-				(error.messages as { field: string; message: string }[]).map(
-					(msg: { field: string; message: string }) => ({
-						field: msg.field,
-						message: msg.message,
-					}),
-				),
-			);
-
+		if (error instanceof HttpError) {
+			ResponseToolkit.error(reply, error.message, error.statusCode);
 			return;
 		}
 

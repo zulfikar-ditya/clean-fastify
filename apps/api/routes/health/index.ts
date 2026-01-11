@@ -1,8 +1,12 @@
 import { db } from "@infra/postgres";
 import { ResponseToolkit } from "@packages/toolkit";
 import { FastifyInstance } from "fastify";
+import { ZodTypeProvider } from "fastify-type-provider-zod";
+import { z } from "zod";
 
 export default function (fastify: FastifyInstance) {
+	fastify.withTypeProvider<ZodTypeProvider>();
+
 	fastify.get(
 		"",
 		{
@@ -12,68 +16,46 @@ export default function (fastify: FastifyInstance) {
 				description:
 					"Checks the health status of the application and its dependencies.",
 				response: {
-					200: {
-						type: "object",
-						properties: {
-							status: { type: "number" },
-							success: { type: "boolean" },
-							message: { type: "string" },
-							data: {
-								type: "object",
-								properties: {
-									database: {
-										type: "object",
-										properties: {
-											status: { type: "string" },
-											responseTime: { type: "number" },
-											remarks: { type: "string" },
-										},
-									},
-									cache: {
-										type: "object",
-										properties: {
-											status: { type: "string" },
-											responseTime: { type: "number" },
-											remarks: { type: "string" },
-										},
-									},
-									redis: {
-										type: "object",
-										properties: {
-											status: { type: "string" },
-										},
-									},
-								},
-							},
-						},
-					},
-					503: {
-						type: "object",
-						properties: {
-							database: {
-								type: "object",
-								properties: {
-									status: { type: "string" },
-									responseTime: { type: "number" },
-									remarks: { type: "string" },
-								},
-							},
-							cache: {
-								type: "object",
-								properties: {
-									status: { type: "string" },
-									responseTime: { type: "number" },
-									remarks: { type: "string" },
-								},
-							},
-							redis: {
-								type: "object",
-								properties: {
-									status: { type: "string" },
-								},
-							},
-						},
-					},
+					200: z.object({
+						status: z.number(),
+						success: z.boolean(),
+						message: z.string(),
+						data: z.object({
+							database: z.object({
+								status: z.string(),
+								responseTime: z.number(),
+								remarks: z.string(),
+							}),
+							cache: z.object({
+								status: z.string(),
+								responseTime: z.number(),
+								remarks: z.string(),
+							}),
+							redis: z.object({
+								status: z.string(),
+							}),
+						}),
+					}),
+					503: z.object({
+						status: z.number(),
+						success: z.boolean(),
+						message: z.string(),
+						data: z.object({
+							database: z.object({
+								status: z.string(),
+								responseTime: z.number(),
+								remarks: z.string(),
+							}),
+							cache: z.object({
+								status: z.string(),
+								responseTime: z.number(),
+								remarks: z.string(),
+							}),
+							redis: z.object({
+								status: z.string(),
+							}),
+						}),
+					}),
 				},
 			},
 		},

@@ -7,9 +7,14 @@ async function corsPlugin(fastify: FastifyInstance) {
 	await fastify.register(fastifyCors, {
 		origin: (origin, cb) => {
 			if (!origin) return cb(null, true);
-
 			const hostname = new URL(origin).hostname;
 			const allowedOrigins = corsConfig.origin;
+
+			if (allowedOrigins === "*") {
+				cb(null, true);
+				return;
+			}
+
 			if (allowedOrigins.includes(hostname)) {
 				cb(null, true);
 			} else {
