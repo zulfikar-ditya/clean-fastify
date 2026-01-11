@@ -1,8 +1,11 @@
 import { Hash } from "@security/hash";
-import { UnprocessableEntityError } from "../../../packages/error/custom.errors";
-import { ForgotPasswordRepository, UserRepository } from "../repositories";
-import { UserInformation } from "../types/UserInformation";
-import { usersTable } from "@postgres/user";
+import { UnprocessableEntityError } from "@packages/error/custom.errors";
+import {
+	ForgotPasswordRepository,
+	UserRepository,
+} from "@infra/postgres/repositories";
+import { UserInformation } from "@packages";
+import { usersTable } from "@postgres/schema";
 import {
 	db,
 	email_verificationsTable,

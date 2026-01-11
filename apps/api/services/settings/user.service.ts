@@ -1,10 +1,14 @@
 import { UnprocessableEntityError } from "packages/error/custom.errors";
-import { UserDetail, UserList, UserRepository } from "@app/api/repositories";
-import { DatatableType } from "@app/api/types/datatable";
-import { PaginationResponse } from "@app/api/types/pagination";
+import {
+	UserDetail,
+	UserList,
+	UserRepository,
+} from "@infra/postgres/repositories";
+import { DatatableType } from "packages/types/datatable";
+import { PaginationResponse } from "packages/types/pagination";
 import { db, rolesTable } from "@postgres/index";
 import { and, eq, inArray, isNull, not } from "drizzle-orm";
-import { usersTable } from "../../../../infra/postgres/user";
+import { usersTable } from "@infra/postgres";
 import { Hash } from "@security/hash";
 
 export const UserService = {

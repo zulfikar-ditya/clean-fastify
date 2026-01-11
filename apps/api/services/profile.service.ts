@@ -1,12 +1,13 @@
 import { and, eq, isNull } from "drizzle-orm";
-import { UserRepository } from "../repositories";
-import { usersTable } from "@postgres/user";
+import { Hash } from "@security/hash";
+
+import { UserRepository } from "@infra/postgres/repositories";
+import { usersTable } from "@infra/postgres";
 import {
 	UnauthorizedError,
 	UnprocessableEntityError,
-} from "../../../packages/error/custom.errors";
-import { Hash } from "@security/hash";
-import { UserInformation } from "../types/UserInformation";
+} from "@packages/error/custom.errors";
+import { UserInformation } from "@packages/index";
 
 export const ProfileService = {
 	updateProfile: async (

@@ -1,5 +1,7 @@
-import { PermissionRepository } from "@app/api/repositories";
-import { RoleRepository } from "@app/api/repositories/role.repository";
+import {
+	PermissionRepository,
+	RoleRepository,
+} from "@infra/postgres/repositories";
 import { ResponseToolkit } from "@toolkit/response";
 import { FastifyReply, FastifyRequest } from "fastify";
 

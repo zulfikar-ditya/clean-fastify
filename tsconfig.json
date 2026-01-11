@@ -35,18 +35,24 @@
 			"@api/*": ["apps/api/*"],
 			"@worker/*": ["apps/worker/*"],
 
-			"@packages/*": ["packages"],
+			"@packages/*": ["packages/*"],
 			"@packages": ["packages/index.ts"],
 
-			"@config/*": ["config"],
+			"@config/*": ["config/*"],
 			"@config": ["config/index.ts"],
 
-			"@infra/*": ["infra"],
+			"@plugins/*": ["packages/plugins/*"],
+			"@plugins": ["packages/plugins/index.ts"],
+
+			"@error/*": ["packages/error/*"],
+			"@error": ["packages/error"],
+
+			"@infra/*": ["infra/*"],
 			"@infra": ["infra/index.ts"],
 
-			"@db/*": ["infra/db"],
-			"@cache/*": ["packages/cache"],
-			"@event/*": ["packages/event"],
+			"@db/*": ["infra/db/*"],
+			"@cache/*": ["packages/cache/*"],
+			"@event/*": ["packages/event/*"],
 
 			"@postgres/*": ["infra/postgres/*"],
 			"@postgres": ["infra/postgres/index.ts"],

@@ -1,13 +1,15 @@
 import fastify from "fastify";
-import { AppConfig, RedisConfig } from "@config/app.config";
-import { registerRoutes } from "./routes/old";
+import { AppConfig } from "@config/app.config";
 import fastifyJwt from "@fastify/jwt";
 import fastifyRedis from "@fastify/redis";
-import corsPlugin from "packages/plugins/cors.plugin";
-import authPlugin from "packages/plugins/auth.plugin";
-import superuserPlugin from "packages/plugins/superuser.plugin";
-import { createLoggerConfig } from "packages/logger/logger";
-import { errorHandler } from "@packages/*";
+import fastifyAutoload from "@fastify/autoload";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import { createLoggerConfig } from "@packages/logger/logger";
+import { RedisConfig } from "@config/redis.config";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export function createAppInstance() {
 	const app = fastify({
@@ -19,10 +21,6 @@ export function createAppInstance() {
 		secret: AppConfig.APP_JWT_SECRET,
 	});
 
-	app.register(corsPlugin);
-	app.register(authPlugin);
-	app.register(superuserPlugin);
-
 	app.register(fastifyRedis, {
 		host: RedisConfig.REDIS_HOST,
 		port: RedisConfig.REDIS_PORT,
@@ -30,10 +28,25 @@ export function createAppInstance() {
 		db: RedisConfig.REDIS_DB,
 	});
 
-	registerRoutes(app);
+	// autoload plugins =========================
+	app.register(fastifyAutoload, {
+		dir: join(__dirname, "../../packages/plugins/app"),
+		cascadeHooks: true,
+		autoHooks: true,
+	});
 
-	// Error Handler ==========================================
-	app.setErrorHandler(errorHandler);
+	app.register(fastifyAutoload, {
+		dir: join(__dirname, "../../packages/plugins/externals"),
+		cascadeHooks: true,
+		autoHooks: true,
+	});
+
+	// autoload routes ===========================
+	app.register(fastifyAutoload, {
+		dir: join(__dirname, "./routes"),
+		cascadeHooks: true,
+		autoHooks: true,
+	});
 
 	return app;
 }

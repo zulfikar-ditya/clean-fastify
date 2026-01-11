@@ -1,13 +1,13 @@
 import { UnprocessableEntityError } from "packages/error/custom.errors";
+import { DatatableType } from "packages/types/datatable";
+import { PaginationResponse } from "packages/types/pagination";
+import { db, permissionsTable } from "@postgres/index";
+import { inArray } from "drizzle-orm";
 import {
 	RoleDetail,
 	RoleList,
 	RoleRepository,
-} from "@app/api/repositories/role.repository";
-import { DatatableType } from "@app/api/types/datatable";
-import { PaginationResponse } from "@app/api/types/pagination";
-import { db, permissionsTable } from "@postgres/index";
-import { inArray } from "drizzle-orm";
+} from "@infra/postgres/repositories";
 
 export const RoleService = {
 	findAll: async (

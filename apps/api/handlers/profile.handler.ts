@@ -1,6 +1,6 @@
 import { ResponseToolkit } from "@toolkit/response";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { UserInformation } from "../types/UserInformation";
+import { UserInformation } from "../../../packages/types/UserInformation";
 import vine from "@vinejs/vine";
 import { ProfileService } from "../services/profile.service";
 import { StrongPassword } from "@default/strong-password";
