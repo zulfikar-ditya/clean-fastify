@@ -60,7 +60,7 @@ export default function (fastify: FastifyInstance) {
 			},
 		},
 		async (_request, reply) => {
-			let serviceStatus = {
+			const serviceStatus = {
 				database: {
 					status: "healthy",
 					responseTime: 0,

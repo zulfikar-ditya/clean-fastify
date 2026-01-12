@@ -79,22 +79,22 @@ migrate-clickhouse-status:
 	bun run infra/clickhouse/scripts/migrate.ts status
 
 db-generate:
-	npx drizzle-kit generate
+	bunx --bun drizzle-kit generate
 
 db-migrate:
-	npx drizzle-kit migrate
+	bunx --bun drizzle-kit migrate
 
 db-push:
-	npx drizzle-kit push
+	bunx --bun drizzle-kit push
 
 db-pull:
-	npx drizzle-kit introspect
+	bunx --bun drizzle-kit introspect
 
 db-studio:
-	npx drizzle-kit studio
+	bunx --bun drizzle-kit studio
 
 db-drop:
-	npx drizzle-kit drop
+	bunx --bun drizzle-kit drop
 
 dev-all:
 	bun run dev:all

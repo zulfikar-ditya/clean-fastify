@@ -6,11 +6,11 @@ import { UserInformation } from "packages/types/UserInformation";
 
 declare module "fastify" {
 	interface FastifyInstance {
-		authenticate(): Promise<void>;
 		userInformation: UserInformation;
 	}
 
 	interface FastifyRequest {
+		authenticate(reply: FastifyReply): Promise<void>;
 		userInformation: UserInformation;
 	}
 }
@@ -23,7 +23,7 @@ async function authenticate(this: FastifyRequest, reply: FastifyReply) {
 		const cacheKey = UserInformationCacheKey(userJwt.id);
 		const cacheUser = await this.server.redis.get(cacheKey);
 		if (!cacheUser) {
-			const userRepo = UserRepository().UserInformation(userJwt.id);
+			const userRepo = new UserRepository().UserInformation(userJwt.id);
 			const userData = await userRepo;
 			await this.server.redis.set(
 				cacheKey,

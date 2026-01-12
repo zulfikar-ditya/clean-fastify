@@ -155,10 +155,9 @@ export class AuthService {
 			.select()
 			.from(email_verificationsTable)
 			.where(eq(email_verificationsTable.token, payload.token))
-			.limit(1)
-			.then((res) => res[0]);
+			.limit(1);
 
-		if (!verificationRecord) {
+		if (verificationRecord.length === 0) {
 			throw new UnprocessableEntityError("Invalid verification token", [
 				{
 					field: "token",
@@ -171,11 +170,11 @@ export class AuthService {
 			await trx
 				.update(usersTable)
 				.set({ email_verified_at: new Date() })
-				.where(eq(usersTable.id, verificationRecord.user_id));
+				.where(eq(usersTable.id, verificationRecord[0].user_id));
 
 			await trx
 				.delete(email_verificationsTable)
-				.where(eq(email_verificationsTable.id, verificationRecord.id));
+				.where(eq(email_verificationsTable.id, verificationRecord[0].id));
 		});
 	}
 
