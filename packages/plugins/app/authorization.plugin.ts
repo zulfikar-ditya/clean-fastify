@@ -1,7 +1,7 @@
 declare module "fastify" {
-	interface FastifyInstance {
-		requireRoles(_roles: string[]): Promise<void>;
-		requiredPermissions(_permissions: string[]): Promise<void>;
+	interface FastifyRequest {
+		requireRoles(roles: string[], reply: FastifyReply): void;
+		requirePermissions(permissions: string[], reply: FastifyReply): void;
 	}
 }
 
@@ -10,8 +10,8 @@ import fp from "fastify-plugin";
 
 function requireRoles(
 	this: FastifyRequest,
-	reply: FastifyReply,
 	roles: string[],
+	reply: FastifyReply,
 ) {
 	const userInformation = this.userInformation;
 	if (!userInformation) {
@@ -36,8 +36,8 @@ function requireRoles(
 
 function requirePermissions(
 	this: FastifyRequest,
-	reply: FastifyReply,
 	permissions: string[],
+	reply: FastifyReply,
 ) {
 	const userInformation = this.userInformation;
 	if (!userInformation) {
@@ -61,7 +61,10 @@ function requirePermissions(
 }
 
 // eslint-disable-next-line @typescript-eslint/require-await
-export default fp(async function (fastify) {
-	fastify.decorateRequest("requireRoles", requireRoles);
-	fastify.decorateRequest("requirePermissions", requirePermissions);
-});
+export default fp(
+	async function (fastify) {
+		fastify.decorateRequest("requireRoles", requireRoles);
+		fastify.decorateRequest("requirePermissions", requirePermissions);
+	},
+	{ name: "authorization-plugin" },
+);

@@ -17,6 +17,89 @@ export function createSuccessResponseSchema<T extends ZodTypeAny>(
 	});
 }
 
+export function createSuccessPaginationResponseSchema<T extends ZodTypeAny>(
+	dataSchema: T,
+	statusCode: number = 200,
+) {
+	return z.object({
+		status: z.number().default(statusCode).describe("HTTP status code"),
+		success: z.boolean().default(true).describe("Request success"),
+		message: z.string().describe("Success message"),
+		data: z.object({
+			data: z.array(dataSchema).describe("Array of data items"),
+			meta: z.object({
+				page: z.number().describe("Current page number"),
+				limit: z.number().describe("Number of items per page"),
+				totalCount: z.number().describe("Total number of items"),
+			}),
+		}),
+	});
+}
+
+export function createSuccessKeySetPaginationResponseSchema<
+	T extends ZodTypeAny,
+>(dataSchema: T, statusCode: number = 200) {
+	return z.object({
+		status: z.number().default(statusCode).describe("HTTP status code"),
+		success: z.boolean().default(true).describe("Request success"),
+		message: z.string().describe("Success message"),
+		data: z.object({
+			data: z.array(dataSchema).describe("Array of data items"),
+			meta: z.object({
+				page: z.number().describe("Current page number"),
+				limit: z.number().describe("Number of items per page"),
+				totalCount: z.number().describe("Total number of items"),
+				nextCursor: z.string().nullable().describe("Cursor for the next page"),
+				previousCursor: z
+					.string()
+					.nullable()
+					.describe("Cursor for the previous page"),
+			}),
+		}),
+	});
+}
+
+export function buildDatatableQueryParamsSchema(
+	allowableSort: string[] = [],
+	allowableFilter: string[] = [],
+) {
+	const filterSchema = allowableFilter.length
+		? z.object(
+				Object.fromEntries(
+					allowableFilter.map((key) => [
+						key,
+						z.union([z.string(), z.boolean(), z.coerce.date()]).optional(),
+					]),
+				),
+			)
+		: z.record(z.string(), z.union([z.string(), z.boolean(), z.coerce.date()]));
+
+	return z.object({
+		page: z.coerce.number().min(1).default(1).describe("Page number"),
+		limit: z.coerce
+			.number()
+			.min(1)
+			.max(100)
+			.default(10)
+			.describe("Items per page"),
+		search: z.string().optional().describe("Search query"),
+		sort: z
+			.string()
+			.default("created_at")
+			.describe(
+				"Sort field" +
+					(allowableSort.length
+						? ` (allowed: ${allowableSort.join(", ")})`
+						: ""),
+			),
+		sortDirection: z
+			.enum(["asc", "desc"])
+			.default("desc")
+			.describe("Sort direction"),
+		"filter[*]": filterSchema.optional().describe("Filter conditions"),
+	});
+}
+
 /**
  * Creates an error response schema
  * @param statusCode - HTTP status code

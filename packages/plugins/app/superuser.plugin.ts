@@ -1,6 +1,6 @@
 declare module "fastify" {
-	interface FastifyInstance {
-		requireSuperuser(): Promise<void>;
+	interface FastifyRequest {
+		requireSuperuser(reply: FastifyReply): void;
 	}
 }
 
