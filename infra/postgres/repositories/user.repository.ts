@@ -18,7 +18,7 @@ import {
 	UnauthorizedError,
 	UnprocessableEntityError,
 } from "@error/custom.errors";
-import { UserStatusEnum } from "@postgres/schema";
+import { UserStatusEnum } from "@postgres/schema/user";
 import {
 	DatatableType,
 	PaginationResponse,

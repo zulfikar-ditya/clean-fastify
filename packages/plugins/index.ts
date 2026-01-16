@@ -5,3 +5,5 @@ export * from "./app/superuser.plugin";
 
 export * from "./externals/cors.plugin";
 export * from "./externals/swagger.plugin";
+export * from "./externals/helmet.plugin";
+export * from "./externals/rate-limiting.plugin";

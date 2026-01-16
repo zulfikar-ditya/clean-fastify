@@ -21,7 +21,7 @@ export function createAppInstance() {
 		logger: createLoggerConfig(),
 	}).withTypeProvider<ZodTypeProvider>();
 
-	// PLUGIN DECORATOR =====================================================
+	// INFRASTRUCTURE PLUGINS (JWT, Redis) ===================================
 	app.register(fastifyJwt, {
 		secret: AppConfig.APP_JWT_SECRET,
 	});
@@ -33,23 +33,28 @@ export function createAppInstance() {
 		db: RedisConfig.REDIS_DB,
 	});
 
+	// SCHEMA VALIDATORS =====================================================
 	app.setValidatorCompiler(validatorCompiler);
 	app.setSerializerCompiler(serializerCompiler);
 
-	// autoload plugins =========================
+	// SECURITY & EXTERNAL PLUGINS (Helmet, CORS, Rate Limiting, Swagger) ===
 	app.register(fastifyAutoload, {
 		dir: join(__dirname, "../../packages/plugins/externals"),
 		cascadeHooks: true,
 		autoHooks: true,
+		options: {
+			prefix: "/",
+		},
 	});
 
+	// APPLICATION PLUGINS (Auth, Authorization, DI, Error Handling) ========
 	app.register(fastifyAutoload, {
 		dir: join(__dirname, "../../packages/plugins/app"),
 		cascadeHooks: true,
 		autoHooks: true,
 	});
 
-	// autoload routes ===========================
+	// APPLICATION ROUTES ====================================================
 	app.register(fastifyAutoload, {
 		dir: join(__dirname, "./routes"),
 		cascadeHooks: true,

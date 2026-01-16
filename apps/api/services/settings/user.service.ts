@@ -11,7 +11,7 @@ import { and, eq, inArray, isNull, not } from "drizzle-orm";
 import { usersTable } from "@infra/postgres";
 import { Hash } from "@security/hash";
 import { injectable } from "tsyringe";
-import { UserStatusEnum } from "@infra/postgres/schema";
+import { UserStatusEnum } from "@infra/postgres/schema/user";
 
 @injectable()
 export class UserService {

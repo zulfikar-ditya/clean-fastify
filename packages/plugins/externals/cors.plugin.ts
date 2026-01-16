@@ -1,32 +1,52 @@
-import fastifyPlugin from "fastify-plugin";
 import fastifyCors from "@fastify/cors";
-import { FastifyInstance } from "fastify";
+import fp from "fastify-plugin";
 import { corsConfig } from "@config";
 
-async function corsPlugin(fastify: FastifyInstance) {
-	await fastify.register(fastifyCors, {
-		origin: (origin, cb) => {
-			if (!origin) return cb(null, true);
-			const hostname = new URL(origin).hostname;
-			const allowedOrigins = corsConfig.origin;
+export default fp(
+	async function (fastify) {
+		await fastify.register(fastifyCors, {
+			origin: (origin, cb) => {
+				// Allow requests with no origin (e.g., mobile apps, curl)
+				if (!origin) return cb(null, true);
 
-			if (allowedOrigins === "*") {
-				cb(null, true);
-				return;
-			}
+				const hostname = new URL(origin).hostname;
+				const allowedOrigins = corsConfig.origin;
 
-			if (allowedOrigins.includes(hostname)) {
-				cb(null, true);
-			} else {
-				cb(new Error("Not allowed by CORS"), false);
-			}
-		},
-		methods: corsConfig.methods,
-		allowedHeaders: corsConfig.allowedHeaders,
-		exposedHeaders: corsConfig.exposedHeaders,
-		credentials: corsConfig.credentials,
-		maxAge: corsConfig.maxAge,
-	});
-}
+				// Allow all origins in development (use with caution)
+				if (allowedOrigins === "*") {
+					cb(null, true);
+					return;
+				}
 
-export default fastifyPlugin(corsPlugin);
+				// Check if hostname is in allowed list
+				if (allowedOrigins.includes(hostname)) {
+					cb(null, true);
+				} else {
+					fastify.log.warn({
+						msg: "CORS rejected",
+						origin,
+						hostname,
+					});
+					cb(new Error("Not allowed by CORS"), false);
+				}
+			},
+			methods: corsConfig.methods,
+			allowedHeaders: corsConfig.allowedHeaders,
+			exposedHeaders: corsConfig.exposedHeaders,
+			credentials: corsConfig.credentials,
+			maxAge: corsConfig.maxAge,
+		});
+
+		// Log CORS configuration
+		fastify.log.info({
+			msg: "CORS enabled",
+			allowedOrigins: corsConfig.origin,
+			methods: corsConfig.methods,
+			credentials: corsConfig.credentials,
+		});
+	},
+	{
+		name: "cors-plugin",
+		dependencies: [],
+	},
+);

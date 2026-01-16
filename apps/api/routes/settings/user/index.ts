@@ -33,7 +33,7 @@ export default function (fastify: FastifyInstance) {
 		"/",
 		{
 			schema: {
-				tags: ["Settings - User"],
+				tags: ["Settings/User"],
 				summary: "Get list of users",
 				description: "Retrieve a paginated list of users.",
 				querystring: buildDatatableQueryParamsSchema(
@@ -67,7 +67,7 @@ export default function (fastify: FastifyInstance) {
 		"/",
 		{
 			schema: {
-				tags: ["Settings - User"],
+				tags: ["Settings/User"],
 				summary: "Create a new user",
 				description: "Create a new user with the provided details.",
 				security: [{ BearerAuth: [] }],
@@ -97,7 +97,7 @@ export default function (fastify: FastifyInstance) {
 		"/:userId",
 		{
 			schema: {
-				tags: ["Settings - User"],
+				tags: ["Settings/User"],
 				summary: "Get user detail by ID",
 				description:
 					"Retrieve detailed information about a specific user by their ID.",
@@ -131,7 +131,7 @@ export default function (fastify: FastifyInstance) {
 		"/:userId",
 		{
 			schema: {
-				tags: ["Settings - User"],
+				tags: ["Settings/User"],
 				summary: "Update user by ID",
 				description: "Update the details of an existing user by their ID.",
 				security: [{ BearerAuth: [] }],
@@ -168,7 +168,7 @@ export default function (fastify: FastifyInstance) {
 		"/:userId",
 		{
 			schema: {
-				tags: ["Settings - User"],
+				tags: ["Settings/User"],
 				summary: "Delete user by ID",
 				description: "Delete a user from the system by their ID.",
 				security: [{ BearerAuth: [] }],
@@ -201,7 +201,7 @@ export default function (fastify: FastifyInstance) {
 		"/:userId/change-password",
 		{
 			schema: {
-				tags: ["Settings - User"],
+				tags: ["Settings/User"],
 				summary: "Change user password by ID",
 				description: "Change the password of an existing user by their ID.",
 				security: [{ BearerAuth: [] }],
