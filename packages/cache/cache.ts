@@ -1,5 +1,5 @@
 import Redis from "ioredis";
-import { logger } from "@packages/logger";
+import { logger } from "@packages";
 import { RedisClient } from "infra/redis/redis-client";
 
 class Cache {

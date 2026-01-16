@@ -10,5 +10,9 @@ export * from "./toolkit/index";
 export * from "./mail/mail.service";
 export * from "./mail/transport.mail";
 
-export * from "./plugins/auth.plugin";
-export * from "./plugins/cors.plugin";
+export * from "./plugins/index";
+
+export * from "./types/UserInformation";
+export * from "./types/datatable";
+export * from "./types/pagination";
+export * from "./types/sort-direction";

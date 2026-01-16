@@ -1,44 +1,88 @@
+import { UnprocessableEntityError } from "packages/error/custom.errors";
+import { DatatableType } from "packages/types/datatable";
+import { PaginationResponse } from "packages/types/pagination";
+import { db, permissionsTable } from "@postgres/index";
+import { inArray } from "drizzle-orm";
 import {
 	RoleDetail,
 	RoleList,
 	RoleRepository,
-} from "@app/api/repositories/role.repository";
-import { DatatableType } from "@app/api/types/datatable";
-import { PaginationResponse } from "@app/api/types/pagination";
-import { db } from "@postgres/index";
+} from "@infra/postgres/repositories";
+import { injectable } from "tsyringe";
 
-export const RoleService = {
-	findAll: async (
+@injectable()
+export class RoleService {
+	constructor(private _roleRepository: RoleRepository) {}
+
+	async findAll(
 		queryParam: DatatableType,
-	): Promise<PaginationResponse<RoleList>> => {
-		return await RoleRepository().findAll(queryParam);
-	},
+	): Promise<PaginationResponse<RoleList>> {
+		return await this._roleRepository.findAll(queryParam);
+	}
 
-	create: async (data: {
+	async create(data: {
 		name: string;
-		permissionIds: string[];
-	}): Promise<void> => {
+		permissionIds?: string[];
+	}): Promise<void> {
+		if (!data.permissionIds) {
+			data.permissionIds = [];
+		}
+
+		// validate the permissions ids
+		const validPermissions = await db
+			.select()
+			.from(permissionsTable)
+			.where(inArray(permissionsTable.id, data.permissionIds));
+
+		if (validPermissions.length !== data.permissionIds.length) {
+			throw new UnprocessableEntityError("Validation error", [
+				{
+					field: "permissionIds",
+					message: "One or more permissions are invalid",
+				},
+			]);
+		}
+
 		await db.transaction(async (tx) => {
-			await RoleRepository().create(data, tx);
+			await this._roleRepository.create(data, tx);
 		});
-	},
+	}
 
-	detail: async (roleId: string): Promise<RoleDetail> => {
-		return await RoleRepository().getDetail(roleId);
-	},
+	async detail(roleId: string): Promise<RoleDetail> {
+		return await this._roleRepository.getDetail(roleId);
+	}
 
-	update: async (
+	async update(
 		id: string,
-		data: { name: string; permissionIds: string[] },
-	): Promise<void> => {
-		await db.transaction(async (tx) => {
-			await RoleRepository().update(id, data, tx);
-		});
-	},
+		data: { name: string; permissionIds?: string[] },
+	): Promise<void> {
+		if (!data.permissionIds) {
+			data.permissionIds = [];
+		}
 
-	delete: async (roleId: string): Promise<void> => {
+		// validate the permissions ids
+		const validPermissions = await db
+			.select()
+			.from(permissionsTable)
+			.where(inArray(permissionsTable.id, data.permissionIds));
+
+		if (validPermissions.length !== data.permissionIds.length) {
+			throw new UnprocessableEntityError("Validation error", [
+				{
+					field: "permissionIds",
+					message: "One or more permissions are invalid",
+				},
+			]);
+		}
+
 		await db.transaction(async (tx) => {
-			await RoleRepository().delete(roleId, tx);
+			await this._roleRepository.update(id, data, tx);
 		});
-	},
-};
+	}
+
+	async delete(roleId: string): Promise<void> {
+		await db.transaction(async (tx) => {
+			await this._roleRepository.delete(roleId, tx);
+		});
+	}
+}

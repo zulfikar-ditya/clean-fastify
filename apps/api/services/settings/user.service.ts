@@ -1,26 +1,46 @@
-import { UnprocessableEntityError } from "@app/api/error/custom.errors";
-import { UserDetail, UserList, UserRepository } from "@app/api/repositories";
-import { DatatableType } from "@app/api/types/datatable";
-import { PaginationResponse } from "@app/api/types/pagination";
-import { db } from "@postgres/index";
-import { and, eq, isNull, not } from "drizzle-orm";
-import { usersTable } from "../../../../infra/postgres/user";
+import { UnprocessableEntityError } from "packages/error/custom.errors";
+import {
+	UserDetail,
+	UserList,
+	UserRepository,
+} from "@infra/postgres/repositories";
+import { DatatableType } from "packages/types/datatable";
+import { PaginationResponse } from "packages/types/pagination";
+import { db, rolesTable } from "@postgres/index";
+import { and, eq, inArray, isNull, not } from "drizzle-orm";
+import { usersTable } from "@infra/postgres";
 import { Hash } from "@security/hash";
+import { injectable } from "tsyringe";
+import { UserStatusEnum } from "@infra/postgres/schema/user";
 
-export const UserService = {
-	findAll: async (
+@injectable()
+export class UserService {
+	constructor(private readonly _userRepository: UserRepository) {}
+
+	async findAll(
 		queryParam: DatatableType,
-	): Promise<PaginationResponse<UserList>> => {
-		return await UserRepository().findAll(queryParam);
-	},
+	): Promise<PaginationResponse<UserList>> {
+		return await this._userRepository.findAll(queryParam);
+	}
 
-	create: async (data: {
+	async create(data: {
 		name: string;
 		email: string;
 		password: string;
 		roleIds: string[];
-	}): Promise<void> => {
-		const isEmailExists = await UserRepository().findByEmail(data.email);
+		remark?: string;
+		status?: UserStatusEnum;
+	}): Promise<void> {
+		const isEmailExists = await db.query.users.findFirst({
+			where: and(
+				eq(usersTable.email, data.email),
+				isNull(usersTable.deleted_at),
+			),
+			columns: {
+				id: true,
+			},
+		});
+
 		if (isEmailExists) {
 			throw new UnprocessableEntityError("Validation error", [
 				{
@@ -30,20 +50,41 @@ export const UserService = {
 			]);
 		}
 
+		// validate the user roles
+		const validRoles = await db
+			.select()
+			.from(rolesTable)
+			.where(inArray(rolesTable.id, data.roleIds));
+
+		if (validRoles.length !== data.roleIds.length) {
+			throw new UnprocessableEntityError("Validation error", [
+				{
+					field: "roleIds",
+					message: "One or more roles are invalid",
+				},
+			]);
+		}
+
 		await db.transaction(async (tx) => {
-			await UserRepository().create(data, tx);
+			await this._userRepository.create(data, tx);
 		});
-	},
+	}
 
-	detail: async (userId: string): Promise<UserDetail> => {
-		return await UserRepository().getDetail(userId);
-	},
+	async detail(userId: string): Promise<UserDetail> {
+		return await this._userRepository.getDetail(userId);
+	}
 
-	update: async (
+	async update(
 		id: string,
-		data: { name: string; email: string; roleIds: string[] },
-	): Promise<void> => {
-		const isEmailExists = await UserRepository().db.query.users.findFirst({
+		data: {
+			name: string;
+			email: string;
+			roleIds: string[];
+			remark?: string;
+			status?: UserStatusEnum;
+		},
+	): Promise<void> {
+		const isEmailExists = await this._userRepository.db.query.users.findFirst({
 			where: and(
 				eq(usersTable.email, data.email),
 				isNull(usersTable.deleted_at),
@@ -59,21 +100,36 @@ export const UserService = {
 			]);
 		}
 
-		await db.transaction(async (tx) => {
-			await UserRepository().update(id, data, tx);
-		});
-	},
+		// validate the user roles
+		const validRoles = await db
+			.select()
+			.from(rolesTable)
+			.where(inArray(rolesTable.id, data.roleIds));
 
-	delete: async (userId: string): Promise<void> => {
-		await db.transaction(async (tx) => {
-			await UserRepository().delete(userId, tx);
-		});
-	},
+		if (validRoles.length !== data.roleIds.length) {
+			throw new UnprocessableEntityError("Validation error", [
+				{
+					field: "roleIds",
+					message: "One or more roles are invalid",
+				},
+			]);
+		}
 
-	resetPassword: async (
+		await db.transaction(async (tx) => {
+			await this._userRepository.update(id, data, tx);
+		});
+	}
+
+	async delete(userId: string): Promise<void> {
+		await db.transaction(async (tx) => {
+			await this._userRepository.delete(userId, tx);
+		});
+	}
+
+	async resetPassword(
 		userId: string,
 		data: { password: string },
-	): Promise<void> => {
+	): Promise<void> {
 		await db.transaction(async (tx) => {
 			await tx
 				.update(usersTable)
@@ -82,5 +138,5 @@ export const UserService = {
 				})
 				.where(eq(usersTable.id, userId));
 		});
-	},
-};
+	}
+}

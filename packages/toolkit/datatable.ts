@@ -1,9 +1,9 @@
 import { paginationLength } from "@default/pagination-length";
 import { defaultSort } from "@default/sort";
 import { PgColumn } from "drizzle-orm/pg-core";
-import { DatatableType } from "@app/api/types/datatable";
-import { SortDirection } from "@app/api/types/sort-direction";
 import { FastifyRequest } from "fastify";
+import { DatatableType } from "packages/types/datatable";
+import { SortDirection } from "packages/types/sort-direction";
 
 export class DatatableToolkit {
 	static parseFilter(request: FastifyRequest): DatatableType {

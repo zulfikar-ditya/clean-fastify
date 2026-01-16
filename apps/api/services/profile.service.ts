@@ -1,19 +1,24 @@
 import { and, eq, isNull } from "drizzle-orm";
-import { UserRepository } from "../repositories";
-import { usersTable } from "@postgres/user";
+import { Hash } from "@security/hash";
+
+import { UserRepository } from "@infra/postgres/repositories";
+import { usersTable } from "@infra/postgres";
 import {
 	UnauthorizedError,
 	UnprocessableEntityError,
-} from "../error/custom.errors";
-import { Hash } from "@security/hash";
-import { UserInformation } from "../types/UserInformation";
+} from "@packages/error/custom.errors";
+import { UserInformation } from "@packages/index";
+import { injectable } from "tsyringe";
 
-export const ProfileService = {
-	updateProfile: async (
+@injectable()
+export class ProfileService {
+	constructor(private readonly _userRepository: UserRepository) {}
+
+	async updateProfile(
 		userId: string,
 		data: { name: string; email: string },
-	): Promise<UserInformation> => {
-		const user = await UserRepository().db.query.users.findFirst({
+	): Promise<UserInformation> {
+		const user = await this._userRepository.db.query.users.findFirst({
 			where: and(eq(usersTable.id, userId), isNull(usersTable.deleted_at)),
 		});
 
@@ -21,8 +26,8 @@ export const ProfileService = {
 			throw new UnauthorizedError("User not found");
 		}
 
-		await UserRepository()
-			.db.update(usersTable)
+		await this._userRepository.db
+			.update(usersTable)
 			.set({
 				name: data.name,
 				email: data.email,
@@ -30,17 +35,17 @@ export const ProfileService = {
 			})
 			.where(eq(usersTable.id, userId));
 
-		return await UserRepository().UserInformation(userId);
-	},
+		return await this._userRepository.UserInformation(userId);
+	}
 
-	updatePassword: async (
+	async updatePassword(
 		userId: string,
 		data: {
 			password: string;
 			currentPassword: string;
 		},
-	): Promise<void> => {
-		const user = await UserRepository().db.query.users.findFirst({
+	): Promise<void> {
+		const user = await this._userRepository.db.query.users.findFirst({
 			where: and(eq(usersTable.id, userId), isNull(usersTable.deleted_at)),
 		});
 
@@ -63,12 +68,12 @@ export const ProfileService = {
 		}
 
 		const hashedPassword = await Hash.generateHash(data.password);
-		await UserRepository()
-			.db.update(usersTable)
+		await this._userRepository.db
+			.update(usersTable)
 			.set({
 				password: hashedPassword,
 				updated_at: new Date(),
 			})
 			.where(eq(usersTable.id, userId));
-	},
-};
+	}
+}

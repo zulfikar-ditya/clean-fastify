@@ -43,7 +43,7 @@ export default tseslint.config(
 			"@typescript-eslint/no-unsafe-member-access": "warn",
 			"@typescript-eslint/no-unsafe-return": "warn",
 
-			indent: ["error", "tab", { SwitchCase: 1 }],
+			// indent: ["error", "tab", { SwitchCase: 1 }],
 			"linebreak-style": ["error", "unix"],
 			quotes: [
 				"error",
@@ -53,7 +53,10 @@ export default tseslint.config(
 			semi: ["error", "always"],
 
 			"no-unused-expressions": "error",
-			"no-unused-vars": "error",
+			"@typescript-eslint/no-unused-vars": [
+				"error",
+				{ argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+			],
 			"no-console": "warn",
 			"no-undef": "off",
 			"no-redeclare": "warn",

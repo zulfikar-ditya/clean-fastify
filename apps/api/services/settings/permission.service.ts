@@ -1,30 +1,43 @@
-import { PermissionList, PermissionRepository } from "@app/api/repositories";
-import { DatatableType } from "@app/api/types/datatable";
-import { PaginationResponse } from "@app/api/types/pagination";
+import { db } from "@infra/postgres";
+import {
+	PermissionList,
+	PermissionRepository,
+} from "@infra/postgres/repositories";
+import { DatatableType, PaginationResponse } from "@packages/index";
+import { injectable } from "tsyringe";
 
-export const PermissionService = {
-	findAll: async (
+@injectable()
+export class PermissionService {
+	constructor(private _permissionRepository: PermissionRepository) {}
+
+	async findAll(
 		queryParams: DatatableType,
-	): Promise<PaginationResponse<PermissionList>> => {
-		return await PermissionRepository().findAll(queryParams);
-	},
+	): Promise<PaginationResponse<PermissionList>> {
+		return await this._permissionRepository.findAll(queryParams);
+	}
 
-	create: async (data: { group: string; name: string[] }): Promise<void> => {
-		await PermissionRepository().create(data);
-	},
+	async create(data: { group: string; name: string[] }): Promise<void> {
+		await db.transaction(async (tx) => {
+			await this._permissionRepository.create(data, tx);
+		});
+	}
 
-	detail: async (permissionId: string): Promise<PermissionList> => {
-		return await PermissionRepository().getDetail(permissionId);
-	},
+	async detail(permissionId: string): Promise<PermissionList> {
+		return await this._permissionRepository.getDetail(permissionId);
+	}
 
-	update: async (
+	async update(
 		permissionId: string,
 		data: { name: string; group: string },
-	): Promise<void> => {
-		await PermissionRepository().update(permissionId, data);
-	},
+	): Promise<void> {
+		await db.transaction(async (tx) => {
+			await this._permissionRepository.update(permissionId, data, tx);
+		});
+	}
 
-	delete: async (permissionId: string): Promise<void> => {
-		await PermissionRepository().delete(permissionId);
-	},
-};
+	async delete(permissionId: string): Promise<void> {
+		await db.transaction(async (tx) => {
+			await this._permissionRepository.delete(permissionId, tx);
+		});
+	}
+}
