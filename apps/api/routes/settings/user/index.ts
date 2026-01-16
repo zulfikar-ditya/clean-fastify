@@ -12,6 +12,7 @@ import {
 import { FastifyInstance } from "fastify";
 import {
 	ChangeUserPasswordSchema,
+	CreateUserSchema,
 	UpdateUserSchema,
 	UserDetailResponseSchema,
 	UserResponseSchema,
@@ -70,7 +71,7 @@ export default function (fastify: FastifyInstance) {
 				summary: "Create a new user",
 				description: "Create a new user with the provided details.",
 				security: [{ BearerAuth: [] }],
-				body: UserResponseSchema,
+				body: CreateUserSchema,
 				response: {
 					201: createSuccessPaginationResponseSchema(z.object({}), 201),
 					400: BadRequestResponseSchema,
@@ -83,7 +84,7 @@ export default function (fastify: FastifyInstance) {
 		},
 		async (request, reply) => {
 			const service = fastify.di.resolve(UserService);
-			await service.create(request.body as any);
+			await service.create(request.body as z.infer<typeof CreateUserSchema>);
 
 			return ResponseToolkit.success(reply, {}, "User created", 201);
 		},
@@ -151,7 +152,10 @@ export default function (fastify: FastifyInstance) {
 		async (request, reply) => {
 			const { userId } = request.params as { userId: string };
 			const service = fastify.di.resolve(UserService);
-			await service.update(userId, request.body as any);
+			await service.update(
+				userId,
+				request.body as z.infer<typeof UpdateUserSchema>,
+			);
 
 			return ResponseToolkit.success(reply, {}, "User updated", 200);
 		},

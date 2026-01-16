@@ -16,8 +16,8 @@ export const CreateUserSchema = z.object({
 	email: z.email().max(255),
 	password: z.string().regex(StrongPassword),
 	status: z.enum(["active", "inactive", "suspended", "blocked"]).optional(),
-	remark: z.string().max(255).nullable(),
-	roleIds: z.array(z.uuid()).nullable(),
+	remark: z.string().max(255).optional(),
+	roleIds: z.array(z.uuid()),
 });
 
 export const UserDetailResponseSchema = UserResponseSchema.extend({
@@ -33,11 +33,11 @@ export const UserDetailResponseSchema = UserResponseSchema.extend({
 });
 
 export const UpdateUserSchema = z.object({
-	name: z.string().min(1).max(255).optional(),
-	email: z.email().max(255).optional(),
-	status: z.enum(["active", "inactive", "suspended", "blocked"]).optional(),
-	remark: z.string().max(255).nullable().optional(),
-	roleIds: z.array(z.uuid()).nullable().optional(),
+	name: z.string().min(1).max(255),
+	email: z.email().max(255),
+	status: z.enum(["active", "inactive", "suspended", "blocked"]),
+	remark: z.string().max(255).optional(),
+	roleIds: z.array(z.uuid()),
 });
 
 export const ChangeUserPasswordSchema = z.object({

@@ -60,8 +60,8 @@ function requirePermissions(
 	}
 }
 
-// eslint-disable-next-line @typescript-eslint/require-await
 export default fp(
+	// eslint-disable-next-line @typescript-eslint/require-await
 	async function (fastify) {
 		fastify.decorateRequest("requireRoles", requireRoles);
 		fastify.decorateRequest("requirePermissions", requirePermissions);

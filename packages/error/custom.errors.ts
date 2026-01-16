@@ -37,7 +37,6 @@ export class NotFoundError extends HttpError {
 export class UnprocessableEntityError extends HttpError {
 	constructor(
 		message: string = "Validation error",
-		// eslint-disable-next-line no-unused-vars
 		public validationErrors?: Array<{ field: string; message: string }>,
 	) {
 		super(422, message, "UNPROCESSABLE_ENTITY");

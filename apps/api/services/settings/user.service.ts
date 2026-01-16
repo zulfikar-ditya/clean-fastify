@@ -11,6 +11,7 @@ import { and, eq, inArray, isNull, not } from "drizzle-orm";
 import { usersTable } from "@infra/postgres";
 import { Hash } from "@security/hash";
 import { injectable } from "tsyringe";
+import { UserStatusEnum } from "@infra/postgres/schema";
 
 @injectable()
 export class UserService {
@@ -27,6 +28,8 @@ export class UserService {
 		email: string;
 		password: string;
 		roleIds: string[];
+		remark?: string;
+		status?: UserStatusEnum;
 	}): Promise<void> {
 		const isEmailExists = await db.query.users.findFirst({
 			where: and(
@@ -73,7 +76,13 @@ export class UserService {
 
 	async update(
 		id: string,
-		data: { name: string; email: string; roleIds: string[] },
+		data: {
+			name: string;
+			email: string;
+			roleIds: string[];
+			remark?: string;
+			status?: UserStatusEnum;
+		},
 	): Promise<void> {
 		const isEmailExists = await this._userRepository.db.query.users.findFirst({
 			where: and(

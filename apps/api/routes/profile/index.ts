@@ -72,8 +72,8 @@ export default function (fastify: FastifyInstance) {
 				name: string;
 				email: string;
 			};
-
-			const updatedUser = await ProfileService.updateProfile(userId, {
+			const service: ProfileService = fastify.di.resolve(ProfileService);
+			const updatedUser = await service.updateProfile(userId, {
 				name,
 				email,
 			});
@@ -113,7 +113,8 @@ export default function (fastify: FastifyInstance) {
 				password: string;
 			};
 
-			await ProfileService.updatePassword(userId, {
+			const service: ProfileService = fastify.di.resolve(ProfileService);
+			await service.updatePassword(userId, {
 				currentPassword,
 				password,
 			});

@@ -9,7 +9,7 @@ import {
 	ServerErrorResponseSchema,
 	UnauthorizedResponseSchema,
 } from "@packages/toolkit";
-import fastify, { FastifyInstance } from "fastify";
+import { FastifyInstance } from "fastify";
 import {
 	SelectPermissionResponseSchema,
 	SelectRoleResponseSchema,

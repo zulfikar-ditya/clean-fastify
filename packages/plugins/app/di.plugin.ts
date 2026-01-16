@@ -14,6 +14,7 @@ export default fp(
 		fastify.decorate("di", container);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		fastify.decorate("resolve", <T>(token: any): T => {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			return container.resolve<T>(token);
 		});
 	},

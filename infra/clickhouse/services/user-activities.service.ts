@@ -5,7 +5,6 @@ import {
 import { UserActivitiesRepository } from "../repositories/user-activities.repository";
 
 export class UserActivitiesService {
-	// eslint-disable-next-line
 	constructor(private repository: UserActivitiesRepository) {}
 
 	async trackActivity(
