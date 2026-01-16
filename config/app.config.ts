@@ -7,6 +7,8 @@ interface IAppConfig {
 	APP_KEY: string;
 	APP_JWT_SECRET: string;
 	APP_JWT_EXPIRES_IN: number;
+	APP_JWT_REFRESH_SECRET: string;
+	APP_JWT_REFRESH_EXPIRES_IN: number;
 
 	// log
 	LOG_LEVEL: "info" | "warn" | "debug";
@@ -28,6 +30,10 @@ export const AppConfig: IAppConfig = {
 
 	APP_JWT_SECRET: process.env.APP_JWT_SECRET || "jwt-secret",
 	APP_JWT_EXPIRES_IN: Number(process.env.APP_JWT_EXPIRES_IN) || 3600,
+	APP_JWT_REFRESH_SECRET:
+		process.env.APP_JWT_REFRESH_SECRET || "jwt-refresh-secret",
+	APP_JWT_REFRESH_EXPIRES_IN:
+		Number(process.env.APP_JWT_REFRESH_EXPIRES_IN) || 604800,
 
 	LOG_LEVEL: (process.env.LOG_LEVEL || "info") as "info" | "warn" | "debug",
 

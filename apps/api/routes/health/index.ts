@@ -1,8 +1,15 @@
 import { db } from "@infra/postgres";
+import { ClickHouseClientManager } from "@infra/clickhouse/client/clickhouse-client";
 import { ResponseToolkit } from "@packages/toolkit";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
+
+const ServiceStatusSchema = z.object({
+	status: z.enum(["healthy", "unhealthy"]),
+	responseTime: z.number(),
+	remarks: z.string().optional(),
+});
 
 export default function (fastify: FastifyInstance) {
 	fastify.withTypeProvider<ZodTypeProvider>();
@@ -21,19 +28,9 @@ export default function (fastify: FastifyInstance) {
 						success: z.boolean(),
 						message: z.string(),
 						data: z.object({
-							database: z.object({
-								status: z.string(),
-								responseTime: z.number(),
-								remarks: z.string(),
-							}),
-							cache: z.object({
-								status: z.string(),
-								responseTime: z.number(),
-								remarks: z.string(),
-							}),
-							redis: z.object({
-								status: z.string(),
-							}),
+							database: ServiceStatusSchema,
+							redis: ServiceStatusSchema,
+							clickhouse: ServiceStatusSchema,
 						}),
 					}),
 					503: z.object({
@@ -41,19 +38,9 @@ export default function (fastify: FastifyInstance) {
 						success: z.boolean(),
 						message: z.string(),
 						data: z.object({
-							database: z.object({
-								status: z.string(),
-								responseTime: z.number(),
-								remarks: z.string(),
-							}),
-							cache: z.object({
-								status: z.string(),
-								responseTime: z.number(),
-								remarks: z.string(),
-							}),
-							redis: z.object({
-								status: z.string(),
-							}),
+							database: ServiceStatusSchema,
+							redis: ServiceStatusSchema,
+							clickhouse: ServiceStatusSchema,
 						}),
 					}),
 				},
@@ -62,34 +49,32 @@ export default function (fastify: FastifyInstance) {
 		async (_request, reply) => {
 			const serviceStatus = {
 				database: {
-					status: "healthy",
+					status: "healthy" as const,
 					responseTime: 0,
-					remarks: "",
-				},
-				cache: {
-					status: "healthy",
-					responseTime: 0,
-					remarks: "",
+					remarks: "PostgreSQL is operational",
 				},
 				redis: {
-					status: "healthy",
+					status: "healthy" as const,
+					responseTime: 0,
+					remarks: "Redis cache is operational",
+				},
+				clickhouse: {
+					status: "healthy" as const,
+					responseTime: 0,
+					remarks: "ClickHouse is operational",
 				},
 			};
 
 			try {
+				const start = Date.now();
 				await db.execute("SELECT 1");
+				const end = Date.now();
+				serviceStatus.database.responseTime = end - start;
 			} catch (error) {
-				let remarks = "";
-				if (error instanceof Error) {
-					remarks = error.message;
-				} else {
-					remarks = String(error);
-				}
-
 				serviceStatus.database = {
 					status: "unhealthy",
 					responseTime: 0,
-					remarks,
+					remarks: error instanceof Error ? error.message : String(error),
 				};
 			}
 
@@ -97,28 +82,26 @@ export default function (fastify: FastifyInstance) {
 				const start = Date.now();
 				await fastify.redis.ping();
 				const end = Date.now();
-				serviceStatus.redis = {
-					status: "healthy",
-				};
-				serviceStatus.cache = {
-					status: "healthy",
-					responseTime: end - start,
-					remarks: "Redis cache is operational.",
-				};
+				serviceStatus.redis.responseTime = end - start;
 			} catch (error) {
-				let remarks = "";
-				if (error instanceof Error) {
-					remarks = error.message;
-				} else {
-					remarks = String(error);
-				}
-				serviceStatus.cache = {
+				serviceStatus.redis = {
 					status: "unhealthy",
 					responseTime: 0,
-					remarks,
+					remarks: error instanceof Error ? error.message : String(error),
 				};
-				serviceStatus.redis = {
+			}
+
+			try {
+				const clickhouse = ClickHouseClientManager.getInstance();
+				const start = Date.now();
+				await clickhouse.ping();
+				const end = Date.now();
+				serviceStatus.clickhouse.responseTime = end - start;
+			} catch (error) {
+				serviceStatus.clickhouse = {
 					status: "unhealthy",
+					responseTime: 0,
+					remarks: error instanceof Error ? error.message : String(error),
 				};
 			}
 
@@ -138,7 +121,7 @@ export default function (fastify: FastifyInstance) {
 			return ResponseToolkit.success(
 				reply,
 				serviceStatus,
-				"Service is healthy",
+				"All services are healthy",
 			);
 		},
 	);

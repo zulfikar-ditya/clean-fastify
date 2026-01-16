@@ -6,7 +6,9 @@ import {
 	VerifyEmailBodySchema,
 	ForgotPasswordBodySchema,
 	ResetPasswordBodySchema,
+	RefreshTokenBodySchema,
 	LoginResponseSchema,
+	RefreshTokenResponseSchema,
 	SuccessResponseSchema,
 	UnauthorizedResponseSchema,
 	ValidationErrorResponseSchema,
@@ -15,6 +17,9 @@ import {
 import { AuthService } from "@app/api/services/auth.service";
 import { ResponseToolkit } from "@packages/toolkit";
 import { UserInformation } from "@packages/index";
+import { AppConfig } from "@config/app.config";
+import { StrToolkit } from "@toolkit/string";
+import { UnprocessableEntityError } from "@packages/error/custom.errors";
 
 export default function (fastify: FastifyInstance) {
 	// ======================
@@ -43,17 +48,31 @@ export default function (fastify: FastifyInstance) {
 			};
 
 			const userInfo = await authService.login(email, password);
-			const token = await reply.jwtSign({
-				id: userInfo.id,
-			});
+
+			const accessToken = await reply.jwtSign(
+				{ id: userInfo.id },
+				{ expiresIn: `${AppConfig.APP_JWT_EXPIRES_IN}s` },
+			);
+
+			const refreshToken = await reply.jwtSign(
+				{ id: userInfo.id, type: "refresh" },
+				{
+					expiresIn: `${AppConfig.APP_JWT_REFRESH_EXPIRES_IN}s`,
+					jti: StrToolkit.random(32),
+				},
+			);
+
+			await authService.storeRefreshToken(userInfo.id, refreshToken);
 
 			return ResponseToolkit.success<{
-				token: string;
+				accessToken: string;
+				refreshToken: string;
 				user: UserInformation;
 			}>(
 				reply,
 				{
-					token,
+					accessToken,
+					refreshToken,
 					user: userInfo,
 				},
 				"Login successful",
@@ -217,6 +236,103 @@ export default function (fastify: FastifyInstance) {
 				"Password reset successfully",
 				200,
 			);
+		},
+	);
+
+	// ======================
+	// POST: /auth/refresh
+	// ======================
+	fastify.post(
+		"/refresh",
+		{
+			schema: {
+				tags: ["Auth"],
+				description: "Refresh access token using refresh token.",
+				body: RefreshTokenBodySchema,
+				response: {
+					200: RefreshTokenResponseSchema,
+					401: UnauthorizedResponseSchema,
+					422: ValidationErrorResponseSchema,
+					500: ServerErrorResponseSchema,
+				},
+			},
+		},
+		async (request, reply) => {
+			const authService = fastify.di.resolve(AuthService);
+			const { refreshToken } = request.body as { refreshToken: string };
+
+			try {
+				const decoded = fastify.jwt.verify(refreshToken);
+
+				if (
+					typeof decoded === "object" &&
+					decoded !== null &&
+					"type" in decoded &&
+					decoded.type !== "refresh"
+				) {
+					throw new UnprocessableEntityError("Invalid token type", [
+						{
+							field: "refreshToken",
+							message: "Invalid refresh token",
+						},
+					]);
+				}
+
+				const isValid = await authService.validateRefreshToken(
+					refreshToken,
+					(decoded as { id: string }).id,
+				);
+
+				if (!isValid) {
+					throw new UnprocessableEntityError("Invalid refresh token", [
+						{
+							field: "refreshToken",
+							message: "Refresh token has been revoked or is invalid",
+						},
+					]);
+				}
+
+				const newAccessToken = await reply.jwtSign(
+					{ id: (decoded as { id: string }).id },
+					{ expiresIn: `${AppConfig.APP_JWT_EXPIRES_IN}s` },
+				);
+
+				const newRefreshToken = await reply.jwtSign(
+					{ id: (decoded as { id: string }).id, type: "refresh" },
+					{
+						expiresIn: `${AppConfig.APP_JWT_REFRESH_EXPIRES_IN}s`,
+						jti: StrToolkit.random(32),
+					},
+				);
+
+				await authService.storeRefreshToken(
+					(decoded as { id: string }).id,
+					newRefreshToken,
+				);
+
+				return ResponseToolkit.success<{
+					accessToken: string;
+					refreshToken: string;
+				}>(
+					reply,
+					{
+						accessToken: newAccessToken,
+						refreshToken: newRefreshToken,
+					},
+					"Token refreshed successfully",
+					200,
+				);
+			} catch (error) {
+				if (error instanceof UnprocessableEntityError) {
+					throw error;
+				}
+				throw new UnprocessableEntityError("Invalid refresh token", [
+					{
+						field: "refreshToken",
+						message: "Invalid or expired refresh token",
+					},
+				]);
+			}
 		},
 	);
 }

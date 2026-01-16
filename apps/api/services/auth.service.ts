@@ -17,6 +17,7 @@ import { verificationTokenLifetime } from "@default/token-lifetime";
 import { AppConfig } from "config/app.config";
 import { sendEmailQueue } from "@app/worker/queue/send-email.queue";
 import { injectable } from "@packages/di";
+import { RedisClient } from "@infra/redis/redis-client";
 
 @injectable()
 export class AuthService {
@@ -242,5 +243,32 @@ export class AuthService {
 				.delete(password_reset_tokensTable)
 				.where(eq(password_reset_tokensTable.user_id, user.id));
 		});
+	}
+
+	async storeRefreshToken(userId: string, refreshToken: string): Promise<void> {
+		const redis = RedisClient.getRedisClient();
+		const key = `refresh_token:${userId}`;
+		await redis.set(
+			key,
+			refreshToken,
+			"EX",
+			AppConfig.APP_JWT_REFRESH_EXPIRES_IN,
+		);
+	}
+
+	async validateRefreshToken(
+		refreshToken: string,
+		userId: string,
+	): Promise<boolean> {
+		const redis = RedisClient.getRedisClient();
+		const key = `refresh_token:${userId}`;
+		const storedToken = await redis.get(key);
+		return storedToken === refreshToken;
+	}
+
+	async revokeRefreshToken(userId: string): Promise<void> {
+		const redis = RedisClient.getRedisClient();
+		const key = `refresh_token:${userId}`;
+		await redis.del(key);
 	}
 }

@@ -3,11 +3,16 @@ import { Pool } from "pg";
 import { DatabaseConfig } from "config/database.config";
 import { schema } from "./schema";
 
-const connectionString = DatabaseConfig.url;
-const client = new Pool({ connectionString });
+const client = new Pool({
+	connectionString: DatabaseConfig.url,
+	min: DatabaseConfig.pool.min,
+	max: DatabaseConfig.pool.max,
+	idleTimeoutMillis: DatabaseConfig.pool.idleTimeoutMillis,
+	connectionTimeoutMillis: DatabaseConfig.pool.connectionTimeoutMillis,
+});
 
 const db = drizzle(client, { schema });
 
-export { db };
+export { db, client };
 
 export * from "./schema";

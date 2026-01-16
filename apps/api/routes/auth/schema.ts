@@ -39,7 +39,8 @@ export const ResetPasswordBodySchema = z.object({
 // Response Schemas
 export const LoginResponseSchema = createSuccessResponseSchema(
 	z.object({
-		token: z.string().describe("JWT token"),
+		accessToken: z.string().describe("JWT access token"),
+		refreshToken: z.string().describe("JWT refresh token"),
 		user: z.object({
 			id: z.string().describe("User ID"),
 			email: z.string().describe("User email"),
@@ -54,6 +55,18 @@ export const LoginResponseSchema = createSuccessResponseSchema(
 				)
 				.describe("User permissions"),
 		}),
+	}),
+	200,
+);
+
+export const RefreshTokenBodySchema = z.object({
+	refreshToken: z.string().describe("Refresh token"),
+});
+
+export const RefreshTokenResponseSchema = createSuccessResponseSchema(
+	z.object({
+		accessToken: z.string().describe("New JWT access token"),
+		refreshToken: z.string().describe("New JWT refresh token"),
 	}),
 	200,
 );
