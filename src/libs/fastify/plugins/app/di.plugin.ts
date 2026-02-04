@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
-import { container } from "@packages/di";
+import { container } from "@fastify-libs";
 
 declare module "fastify" {
 	interface FastifyInstance {

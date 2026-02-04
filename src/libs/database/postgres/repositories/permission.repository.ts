@@ -1,9 +1,9 @@
-import { db, permissionsTable } from "infra/postgres/index";
+import { db, permissionsTable } from "@database";
 import { defaultSort } from "@/libs/fastify/default/sort";
 import { and, asc, desc, eq, ilike, not, or, SQL } from "drizzle-orm";
 import { DbTransaction } from ".";
-import { DatatableType, PaginationResponse, SortDirection } from "@packages";
-import { NotFoundError, UnprocessableEntityError } from "@error/custom.errors";
+import { DatatableType, PaginationResponse, SortDirection } from "@types";
+import { NotFoundError, UnprocessableEntityError } from "@fastify-libs";
 import { injectable } from "tsyringe";
 
 export type PermissionList = {

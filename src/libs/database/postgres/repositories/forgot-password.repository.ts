@@ -1,7 +1,7 @@
-import { db, password_reset_tokensTable } from "infra/postgres/index";
+import { db, password_reset_tokensTable } from "@database";
 import { eq } from "drizzle-orm";
 import { DbTransaction } from ".";
-import { injectable } from "@packages/di";
+import { injectable } from "@fastify-libs";
 
 @injectable()
 export class ForgotPasswordRepository {

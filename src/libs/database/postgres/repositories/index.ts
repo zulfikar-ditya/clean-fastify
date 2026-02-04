@@ -1,4 +1,4 @@
-import { schema } from "@postgres/schema";
+import { schema } from "@database";
 import { ExtractTablesWithRelations } from "drizzle-orm";
 import { PgTransaction } from "drizzle-orm/pg-core";
 import { PostgresJsQueryResultHKT } from "drizzle-orm/postgres-js";

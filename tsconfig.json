@@ -108,16 +108,27 @@
 		"paths": {
 			"@/*": ["src/*"],
 			"@libs/*": ["./src/libs/*"],
+			"@libs": ["./src/libs", "./src/libs/index.ts"],
 			"@cache/*": ["./src/libs/cache/*"],
+			"@cache": ["./src/libs/cache", "./src/libs/cache/index.ts"],
 			"@config/*": ["./src/libs/config/*"],
+			"@config": ["./src/libs/config", "./src/libs/config/index.ts"],
 			"@database/*": ["./src/libs/database/*"],
-			"@fastify/*": ["./src/libs/fastify/*"],
+			"@database": ["./src/libs/database", "./src/libs/database/index.ts"],
+			"@fastify-libs/*": ["./src/libs/fastify/*"],
+			"@fastify-libs": ["./src/libs/fastify", "./src/libs/fastify/index.ts"],
 			"@utils/*": ["./src/libs/utils/*"],
+			"@utils": ["./src/libs/utils", "./src/libs/utils/index.ts"],
 			"@bull/*": ["./src/bull/*"],
+			"@bull": ["./src/bull", "./src/bull/index.ts"],
+			"@types/*": ["./src/libs/types/*"],
+			"@types": ["./src/libs/types", "./src/libs/types/index.ts"],
 			"@routes/*": ["./src/routes/*"],
-			"@services/*": ["./src/services/*"]
+			"@routes": ["./src/routes", "./src/routes/index.ts"],
+			"@services/*": ["./src/services/*"],
+			"@services": ["./src/services", "./src/services/index.ts"]
 		}
 	},
-	"include": ["src", "eslint.config.mjs", "drizzle.config.mjs"],
+	"include": ["src", "eslint.config.mjs", "drizzle.config.ts"],
 	"exclude": ["node_modules", "dist"]
 }

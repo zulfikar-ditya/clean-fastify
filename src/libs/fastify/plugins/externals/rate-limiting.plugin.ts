@@ -1,6 +1,6 @@
 import fastifyRateLimit from "@fastify/rate-limit";
 import fp from "fastify-plugin";
-import { RedisConfig } from "../../../config/redis.config";
+import { RedisConfig } from "@config";
 import type { FastifyRequest } from "fastify";
 
 export default fp(

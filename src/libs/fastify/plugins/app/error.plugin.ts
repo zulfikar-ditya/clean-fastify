@@ -1,10 +1,7 @@
-import { ResponseToolkit } from "@toolkit/response";
+import { ResponseToolkit } from "@utils";
 import fp from "fastify-plugin";
 import Fastify from "fastify";
-import {
-	HttpError,
-	UnprocessableEntityError,
-} from "packages/error/custom.errors";
+import { HttpError, UnprocessableEntityError } from "@fastify-libs";
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export default fp(async function (fastify) {

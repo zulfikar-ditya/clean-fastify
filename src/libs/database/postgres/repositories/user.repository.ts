@@ -1,4 +1,4 @@
-import { db, user_rolesTable, usersTable } from "infra/postgres/index";
+import { db, user_rolesTable, usersTable } from "@database";
 import {
 	and,
 	eq,
@@ -11,21 +11,21 @@ import {
 	exists,
 } from "drizzle-orm";
 import { defaultSort } from "@/libs/fastify/default/sort";
-import { Hash } from "@security/hash";
+import { Hash } from "@utils";
 import { DbTransaction } from ".";
 import {
 	NotFoundError,
 	UnauthorizedError,
 	UnprocessableEntityError,
-} from "@error/custom.errors";
-import { UserStatusEnum } from "@postgres/schema/user";
+} from "@fastify-libs";
 import {
 	DatatableType,
 	PaginationResponse,
 	SortDirection,
 	UserInformation,
-} from "@packages";
-import { injectable } from "@packages/di";
+} from "@types";
+import { injectable } from "@fastify-libs";
+import { UserStatusEnum } from "../schema/user";
 
 export type UserList = {
 	id: string;

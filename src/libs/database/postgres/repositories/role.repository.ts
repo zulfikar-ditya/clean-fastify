@@ -1,10 +1,10 @@
-import { db, role_permissionsTable, rolesTable } from "infra/postgres/index";
+import { db, role_permissionsTable, rolesTable } from "@database";
 import { and, asc, desc, eq, ilike, ne, not, or, SQL } from "drizzle-orm";
 import { defaultSort } from "@/libs/fastify/default/sort";
-import { DatatableToolkit } from "@toolkit/datatable";
+import { DatatableToolkit } from "@utils";
 import { DbTransaction } from ".";
-import { DatatableType, PaginationResponse, SortDirection } from "@packages";
-import { NotFoundError, UnprocessableEntityError } from "@error/custom.errors";
+import { DatatableType, PaginationResponse, SortDirection } from "@types";
+import { NotFoundError, UnprocessableEntityError } from "@fastify-libs";
 import { injectable } from "tsyringe";
 
 export type RoleList = {

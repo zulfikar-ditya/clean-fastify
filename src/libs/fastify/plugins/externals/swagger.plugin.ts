@@ -1,7 +1,7 @@
 import fastifySwagger from "@fastify/swagger";
 import fp from "fastify-plugin";
 import ScalarApiReference from "@scalar/fastify-api-reference";
-import { AppConfig } from "../../../config/app.config";
+import { AppConfig } from "@config";
 import { jsonSchemaTransform } from "fastify-type-provider-zod";
 
 export default fp(
