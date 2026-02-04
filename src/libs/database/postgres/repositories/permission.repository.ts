@@ -1,5 +1,5 @@
 import { db, permissionsTable } from "infra/postgres/index";
-import { defaultSort } from "@default/sort";
+import { defaultSort } from "@/libs/fastify/default/sort";
 import { and, asc, desc, eq, ilike, not, or, SQL } from "drizzle-orm";
 import { DbTransaction } from ".";
 import { DatatableType, PaginationResponse, SortDirection } from "@packages";

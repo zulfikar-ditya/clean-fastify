@@ -13,7 +13,7 @@ import {
 } from "@postgres/index";
 import { and, eq, isNull } from "drizzle-orm";
 import { StrToolkit } from "@toolkit/string";
-import { verificationTokenLifetime } from "@default/token-lifetime";
+import { verificationTokenLifetime } from "@/libs/fastify/default/token-lifetime";
 import { AppConfig } from "config/app.config";
 import { sendEmailQueue } from "@app/worker/queue/send-email.queue";
 import { injectable } from "@packages/di";

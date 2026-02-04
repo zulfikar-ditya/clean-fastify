@@ -3,7 +3,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import relativeTime from "dayjs/plugin/relativeTime";
 import advancedFormat from "dayjs/plugin/advancedFormat";
-import { AppConfig } from "@config";
+import { AppConfig } from "../config";
 
 // Initialize dayjs plugins
 dayjs.extend(utc);

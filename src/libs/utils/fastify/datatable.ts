@@ -1,5 +1,5 @@
-import { paginationLength } from "@default/pagination-length";
-import { defaultSort } from "@default/sort";
+import { paginationLength } from "@/libs/fastify/default/pagination-length";
+import { defaultSort } from "@/libs/fastify/default/sort";
 import { PgColumn } from "drizzle-orm/pg-core";
 import { FastifyRequest } from "fastify";
 import { DatatableType } from "packages/types/datatable";

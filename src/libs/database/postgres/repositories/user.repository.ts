@@ -10,7 +10,7 @@ import {
 	desc,
 	exists,
 } from "drizzle-orm";
-import { defaultSort } from "@default/sort";
+import { defaultSort } from "@/libs/fastify/default/sort";
 import { Hash } from "@security/hash";
 import { DbTransaction } from ".";
 import {
