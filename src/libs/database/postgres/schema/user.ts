@@ -50,3 +50,7 @@ export const usersRelations = relations(usersTable, ({ many }) => ({
 	password_reset_tokens: many(password_reset_tokensTable),
 	user_roles: many(user_rolesTable),
 }));
+
+// Type exports
+export type User = typeof usersTable.$inferSelect;
+export type InsertUser = typeof usersTable.$inferInsert;

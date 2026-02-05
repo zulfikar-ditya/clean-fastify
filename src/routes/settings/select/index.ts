@@ -1,14 +1,11 @@
-import {
-	PermissionRepository,
-	RoleRepository,
-} from "@infra/postgres/repositories";
+import { PermissionRepository, RoleRepository } from "@database";
 import {
 	createSuccessResponseSchema,
 	ForbiddenResponseSchema,
 	ResponseToolkit,
 	ServerErrorResponseSchema,
 	UnauthorizedResponseSchema,
-} from "@packages/toolkit";
+} from "@utils";
 import { FastifyInstance } from "fastify";
 import {
 	SelectPermissionResponseSchema,

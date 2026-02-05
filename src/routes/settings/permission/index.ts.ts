@@ -1,4 +1,4 @@
-import { PermissionService } from "@app/api/services/settings/permission.service";
+import { PermissionService } from "@services";
 import {
 	BadRequestResponseSchema,
 	buildDatatableQueryParamsSchema,
@@ -9,7 +9,7 @@ import {
 	ResponseToolkit,
 	ServerErrorResponseSchema,
 	UnauthorizedResponseSchema,
-} from "@packages/toolkit";
+} from "@utils";
 import { FastifyInstance } from "fastify";
 import { z } from "zod";
 import {

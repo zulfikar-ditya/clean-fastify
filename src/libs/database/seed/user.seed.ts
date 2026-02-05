@@ -1,10 +1,5 @@
-import {
-	db,
-	rolesTable,
-	user_rolesTable,
-	usersTable,
-} from "infra/postgres/index";
-import { Hash } from "@security/hash";
+import { db, rolesTable, user_rolesTable, usersTable } from "@database";
+import { Hash } from "@utils";
 import { eq } from "drizzle-orm";
 
 export const UserSeeder = async () => {

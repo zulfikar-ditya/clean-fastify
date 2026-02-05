@@ -47,3 +47,24 @@ export {
 	email_verificationsTable,
 	password_reset_tokensTable,
 };
+
+// Export all types
+export type { User, InsertUser, UserStatusEnum } from "./user";
+export type {
+	Role,
+	Permission,
+	RolePermission,
+	UserRole,
+	InsertRole,
+	InsertPermission,
+	InsertRolePermission,
+	InsertUserRole,
+} from "./rbac";
+export type {
+	EmailVerification,
+	InsertEmailVerification,
+} from "./email_verification";
+export type {
+	PasswordResetToken,
+	InsertPasswordResetToken,
+} from "./password_reset_token";

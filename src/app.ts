@@ -5,7 +5,7 @@ import fastifyRedis from "@fastify/redis";
 import fastifyAutoload from "@fastify/autoload";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { createLoggerConfig } from "@packages/logger/logger";
+import { createLoggerConfig } from "@utils";
 import { RedisConfig } from "@config/redis.config";
 import {
 	serializerCompiler,
@@ -39,7 +39,7 @@ export function createAppInstance() {
 
 	// SECURITY & EXTERNAL PLUGINS (Helmet, CORS, Rate Limiting, Swagger) ===
 	app.register(fastifyAutoload, {
-		dir: join(__dirname, "../../packages/plugins/externals"),
+		dir: join(__dirname, "./libs/fastify/plugins/externals"),
 		cascadeHooks: true,
 		autoHooks: true,
 		options: {
@@ -49,7 +49,7 @@ export function createAppInstance() {
 
 	// APPLICATION PLUGINS (Auth, Authorization, DI, Error Handling) ========
 	app.register(fastifyAutoload, {
-		dir: join(__dirname, "../../packages/plugins/app"),
+		dir: join(__dirname, "./libs/fastify/plugins/app"),
 		cascadeHooks: true,
 		autoHooks: true,
 	});

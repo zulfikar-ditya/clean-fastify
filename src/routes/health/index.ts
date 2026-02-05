@@ -1,6 +1,5 @@
-import { db } from "@infra/postgres";
-import { ClickHouseClientManager } from "@infra/clickhouse/client/clickhouse-client";
-import { ResponseToolkit } from "@packages/toolkit";
+import { ClickHouseClientManager, db } from "@database";
+import { ResponseToolkit } from "@utils";
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
@@ -49,17 +48,17 @@ export default function (fastify: FastifyInstance) {
 		async (_request, reply) => {
 			const serviceStatus = {
 				database: {
-					status: "healthy" as const,
+					status: "healthy",
 					responseTime: 0,
 					remarks: "PostgreSQL is operational",
 				},
 				redis: {
-					status: "healthy" as const,
+					status: "healthy",
 					responseTime: 0,
 					remarks: "Redis cache is operational",
 				},
 				clickhouse: {
-					status: "healthy" as const,
+					status: "healthy",
 					responseTime: 0,
 					remarks: "ClickHouse is operational",
 				},

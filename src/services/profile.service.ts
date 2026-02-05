@@ -1,13 +1,8 @@
 import { and, eq, isNull } from "drizzle-orm";
-import { Hash } from "@security/hash";
-
-import { UserRepository } from "@infra/postgres/repositories";
-import { usersTable } from "@infra/postgres";
-import {
-	UnauthorizedError,
-	UnprocessableEntityError,
-} from "@packages/error/custom.errors";
-import { UserInformation } from "@packages/index";
+import { Hash } from "@utils";
+import { UserRepository, usersTable } from "@database";
+import { UnauthorizedError, UnprocessableEntityError } from "@fastify-libs";
+import { UserInformation } from "@types";
 import { injectable } from "tsyringe";
 
 @injectable()

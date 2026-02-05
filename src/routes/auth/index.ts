@@ -14,12 +14,11 @@ import {
 	ValidationErrorResponseSchema,
 	ServerErrorResponseSchema,
 } from "./schema";
-import { AuthService } from "@app/api/services/auth.service";
-import { ResponseToolkit } from "@packages/toolkit";
-import { UserInformation } from "@packages/index";
-import { AppConfig } from "@config/app.config";
-import { StrToolkit } from "@toolkit/string";
-import { UnprocessableEntityError } from "@packages/error/custom.errors";
+import { AuthService } from "@services";
+import { ResponseToolkit, StrToolkit } from "@utils";
+import { UserInformation } from "@types";
+import { AppConfig } from "@config";
+import { UnprocessableEntityError } from "@fastify-libs";
 
 export default function (fastify: FastifyInstance) {
 	// ======================

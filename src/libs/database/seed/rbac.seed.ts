@@ -1,4 +1,4 @@
-import { db, permissionsTable, rolesTable } from "infra/postgres";
+import { db, permissionsTable, rolesTable } from "@database";
 
 export const RBACSeeder = () => {
 	return db.transaction(async (tx) => {

@@ -1,9 +1,5 @@
-import { db } from "@infra/postgres";
-import {
-	PermissionList,
-	PermissionRepository,
-} from "@infra/postgres/repositories";
-import { DatatableType, PaginationResponse } from "@packages/index";
+import { db, PermissionRepository } from "@database";
+import { DatatableType, PaginationResponse, PermissionList } from "@types";
 import { injectable } from "tsyringe";
 
 @injectable()

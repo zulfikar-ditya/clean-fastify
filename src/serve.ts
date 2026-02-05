@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { AppConfig } from "config/app.config";
+import { AppConfig } from "@config";
 import { createAppInstance } from "./app";
 
 const app = createAppInstance();

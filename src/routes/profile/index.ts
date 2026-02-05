@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
-import { ProfileService } from "@app/api/services/profile.service";
-import { ResponseToolkit } from "@packages/toolkit";
-import { UserInformation } from "@packages/index";
+import { ProfileService } from "@services";
+import { ResponseToolkit } from "@utils";
+import { UserInformation } from "@types";
 import {
 	UpdateProfileBodySchema,
 	UpdatePasswordBodySchema,

@@ -11,8 +11,11 @@ import { usersTable } from "./user";
 export const rolesTable = pgTable("roles", {
 	id: uuid("id").defaultRandom().primaryKey(),
 	name: varchar("name", { length: 100 }).notNull().unique(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	created_at: timestamp("created_at").defaultNow().notNull(),
+	updated_at: timestamp("updated_at")
+		.defaultNow()
+		.notNull()
+		.$onUpdate(() => new Date()),
 });
 
 export const rolesRelations = relations(rolesTable, ({ many }) => ({
@@ -24,8 +27,11 @@ export const permissionsTable = pgTable("permissions", {
 	id: uuid("id").defaultRandom().primaryKey(),
 	name: varchar("name", { length: 255 }).notNull().unique(),
 	group: varchar("group", { length: 100 }).notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at").defaultNow().notNull(),
+	created_at: timestamp("created_at").defaultNow().notNull(),
+	updated_at: timestamp("updated_at")
+		.defaultNow()
+		.notNull()
+		.$onUpdate(() => new Date()),
 });
 
 export const permissionsRelations = relations(permissionsTable, ({ many }) => ({
@@ -70,7 +76,7 @@ export const user_rolesTable = pgTable(
 		roleId: uuid("role_id")
 			.notNull()
 			.references(() => rolesTable.id, { onDelete: "cascade" }),
-		assignedAt: timestamp("assigned_at").defaultNow().notNull(),
+		assigned_at: timestamp("assigned_at").defaultNow().notNull(),
 	},
 	(table) => ({
 		pk: primaryKey({ columns: [table.userId, table.roleId] }),

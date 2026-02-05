@@ -8,7 +8,7 @@ import {
 	ResponseToolkit,
 	ServerErrorResponseSchema,
 	UnauthorizedResponseSchema,
-} from "@packages/toolkit";
+} from "@utils";
 import { FastifyInstance } from "fastify";
 import {
 	ChangeUserPasswordSchema,
@@ -17,7 +17,7 @@ import {
 	UserDetailResponseSchema,
 	UserResponseSchema,
 } from "./schema";
-import { UserService } from "@app/api/services/settings/user.service";
+import { UserService } from "@services";
 import { z } from "zod";
 
 export default function (fastify: FastifyInstance) {

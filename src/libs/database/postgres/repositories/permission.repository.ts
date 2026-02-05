@@ -2,26 +2,15 @@ import { db, permissionsTable } from "@database";
 import { defaultSort } from "@/libs/fastify/default/sort";
 import { and, asc, desc, eq, ilike, not, or, SQL } from "drizzle-orm";
 import { DbTransaction } from ".";
-import { DatatableType, PaginationResponse, SortDirection } from "@types";
+import {
+	DatatableType,
+	PaginationResponse,
+	PermissionList,
+	PermissionSelectOptions,
+	SortDirection,
+} from "@types";
 import { NotFoundError, UnprocessableEntityError } from "@fastify-libs";
 import { injectable } from "tsyringe";
-
-export type PermissionList = {
-	id: string;
-	name: string;
-	group: string;
-	created_at: Date;
-	updated_at: Date;
-};
-
-export type PermissionSelectOptions = {
-	group: string;
-	permissions: {
-		id: string;
-		name: string;
-		group: string;
-	}[];
-};
 
 @injectable()
 export class PermissionRepository {
@@ -87,8 +76,8 @@ export class PermissionRepository {
 			id: permissionsTable.id,
 			name: permissionsTable.name,
 			group: permissionsTable.group,
-			created_at: permissionsTable.createdAt,
-			updated_at: permissionsTable.updatedAt,
+			created_at: permissionsTable.created_at,
+			updated_at: permissionsTable.updated_at,
 		};
 
 		type OrderableKey = keyof typeof validateOrderBy;
@@ -107,8 +96,8 @@ export class PermissionRepository {
 				id: true,
 				name: true,
 				group: true,
-				createdAt: true,
-				updatedAt: true,
+				created_at: true,
+				updated_at: true,
 			},
 			limit,
 			offset,
@@ -118,8 +107,8 @@ export class PermissionRepository {
 			id: item.id,
 			name: item.name,
 			group: item.group,
-			created_at: item.createdAt,
-			updated_at: item.updatedAt,
+			created_at: item.created_at,
+			updated_at: item.updated_at,
 		}));
 
 		const totalCount = await database.$count(
@@ -145,8 +134,8 @@ export class PermissionRepository {
 				id: true,
 				name: true,
 				group: true,
-				createdAt: true,
-				updatedAt: true,
+				created_at: true,
+				updated_at: true,
 			},
 		});
 
@@ -158,8 +147,8 @@ export class PermissionRepository {
 			id: permission.id,
 			name: permission.name,
 			group: permission.group,
-			created_at: permission.createdAt,
-			updated_at: permission.updatedAt,
+			created_at: permission.created_at,
+			updated_at: permission.updated_at,
 		};
 	}
 

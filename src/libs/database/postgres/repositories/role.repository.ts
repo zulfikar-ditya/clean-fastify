@@ -3,32 +3,15 @@ import { and, asc, desc, eq, ilike, ne, not, or, SQL } from "drizzle-orm";
 import { defaultSort } from "@/libs/fastify/default/sort";
 import { DatatableToolkit } from "@utils";
 import { DbTransaction } from ".";
-import { DatatableType, PaginationResponse, SortDirection } from "@types";
+import {
+	DatatableType,
+	PaginationResponse,
+	RoleDetail,
+	RoleList,
+	SortDirection,
+} from "@types";
 import { NotFoundError, UnprocessableEntityError } from "@fastify-libs";
 import { injectable } from "tsyringe";
-
-export type RoleList = {
-	id: string;
-	name: string;
-	created_at: Date;
-	updated_at: Date;
-};
-
-export type RoleDetail = {
-	id: string;
-	name: string;
-	created_at: Date;
-	updated_at: Date;
-	permissions: {
-		group: string;
-		names: {
-			id: string;
-			name: string;
-			is_assigned: boolean;
-		}[];
-	}[];
-};
-
 @injectable()
 export class RoleRepository {
 	private dbInstance = db;
@@ -77,8 +60,8 @@ export class RoleRepository {
 			{
 				id: rolesTable.id,
 				name: rolesTable.name,
-				createdAt: rolesTable.createdAt,
-				updatedAt: rolesTable.updatedAt,
+				created_at: rolesTable.created_at,
+				updated_at: rolesTable.updated_at,
 			},
 			orderBy,
 		);
@@ -88,8 +71,8 @@ export class RoleRepository {
 			columns: {
 				id: true,
 				name: true,
-				createdAt: true,
-				updatedAt: true,
+				created_at: true,
+				updated_at: true,
 			},
 			limit,
 			offset,
@@ -99,8 +82,8 @@ export class RoleRepository {
 			data: roles.map((role) => ({
 				id: role.id,
 				name: role.name,
-				created_at: role.createdAt,
-				updated_at: role.updatedAt,
+				created_at: role.created_at,
+				updated_at: role.updated_at,
 			})),
 			meta: {
 				page,
@@ -158,8 +141,8 @@ export class RoleRepository {
 			columns: {
 				id: true,
 				name: true,
-				createdAt: true,
-				updatedAt: true,
+				created_at: true,
+				updated_at: true,
 			},
 
 			with: {
@@ -192,8 +175,8 @@ export class RoleRepository {
 		return {
 			id: role.id,
 			name: role.name,
-			created_at: role.createdAt,
-			updated_at: role.updatedAt,
+			created_at: role.created_at,
+			updated_at: role.updated_at,
 			permissions: allPermissions.reduce(
 				(
 					acc: {

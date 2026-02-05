@@ -27,3 +27,8 @@ export const password_reset_tokensRelations = relations(
 		}),
 	}),
 );
+
+// Type exports
+export type PasswordResetToken = typeof password_reset_tokensTable.$inferSelect;
+export type InsertPasswordResetToken =
+	typeof password_reset_tokensTable.$inferInsert;

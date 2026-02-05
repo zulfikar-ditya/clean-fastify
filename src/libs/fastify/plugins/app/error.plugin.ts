@@ -1,11 +1,22 @@
 import { ResponseToolkit } from "@utils";
 import fp from "fastify-plugin";
-import Fastify from "fastify";
+import Fastify, { FastifyError } from "fastify";
 import { HttpError, UnprocessableEntityError } from "@fastify-libs";
+
+interface ValidationError {
+	instancePath: string;
+	schemaPath?: string;
+	message?: string;
+}
+
+interface ErrorWithStatusCode {
+	statusCode?: number;
+	message: string;
+}
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export default fp(async function (fastify) {
-	fastify.setErrorHandler(function (error, request, reply) {
+	fastify.setErrorHandler(function (error: FastifyError, request, reply) {
 		// Custom HTTP errors
 		if (error instanceof UnprocessableEntityError) {
 			ResponseToolkit.validationError(reply, error.validationErrors || []);
@@ -13,7 +24,7 @@ export default fp(async function (fastify) {
 		}
 
 		if (error.validation) {
-			const errors = error.validation.map((err) => ({
+			const errors = error.validation.map((err: ValidationError) => ({
 				[err.instancePath.replace(/^\//, "") || err.schemaPath || "body"]:
 					err.message || "Invalid value",
 			}));
@@ -107,8 +118,12 @@ export default fp(async function (fastify) {
 			return;
 		}
 
-		if (error.statusCode && error.statusCode >= 400 && error.statusCode < 500) {
-			ResponseToolkit.error(reply, error.message, error.statusCode);
+		if (
+			(error as ErrorWithStatusCode).statusCode &&
+			(error as ErrorWithStatusCode).statusCode! >= 400 &&
+			(error as ErrorWithStatusCode).statusCode! < 500
+		) {
+			ResponseToolkit.error(reply, error.message, error.statusCode ?? 400);
 			return;
 		}
 

@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { RBACSeeder } from "./rbac.seed";
 import { UserSeeder } from "./user.seed";
 

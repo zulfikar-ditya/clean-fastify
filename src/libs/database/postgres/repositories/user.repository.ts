@@ -1,4 +1,4 @@
-import { db, user_rolesTable, usersTable } from "@database";
+import { db, user_rolesTable, usersTable, UserStatusEnum } from "@database";
 import {
 	and,
 	eq,
@@ -10,64 +10,25 @@ import {
 	desc,
 	exists,
 } from "drizzle-orm";
-import { defaultSort } from "@/libs/fastify/default/sort";
 import { Hash } from "@utils";
 import { DbTransaction } from ".";
 import {
 	NotFoundError,
 	UnauthorizedError,
 	UnprocessableEntityError,
+	defaultSort,
 } from "@fastify-libs";
 import {
 	DatatableType,
 	PaginationResponse,
 	SortDirection,
+	UserCreate,
+	UserDetail,
+	UserForAuth,
 	UserInformation,
+	UserList,
 } from "@types";
 import { injectable } from "@fastify-libs";
-import { UserStatusEnum } from "../schema/user";
-
-export type UserList = {
-	id: string;
-	name: string;
-	email: string;
-	status: UserStatusEnum | null;
-	roles: string[] | null;
-	created_at: Date | null;
-	updated_at: Date | null;
-};
-
-export type UserCreate = {
-	name: string;
-	email: string;
-	password: string;
-	status?: UserStatusEnum;
-	remark?: string;
-	roleIds?: string[];
-};
-
-export type UserDetail = {
-	id: string;
-	name: string;
-	email: string;
-	status: UserStatusEnum | null;
-	remark: string | null;
-	roles: {
-		id: string;
-		name: string;
-	}[];
-	created_at: Date | null;
-	updated_at: Date | null;
-};
-
-export type UserForAuth = {
-	id: string;
-	name: string;
-	email: string;
-	password: string;
-	status: UserStatusEnum | null;
-	email_verified_at: Date | null;
-};
 
 @injectable()
 export class UserRepository {

@@ -1,5 +1,5 @@
 import { AppConfig } from "@config/app.config";
-import { DateToolkit, ResponseToolkit } from "@packages/toolkit";
+import { DateToolkit, ResponseToolkit } from "@utils";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";

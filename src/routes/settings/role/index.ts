@@ -1,4 +1,4 @@
-import { RoleService } from "@app/api/services/settings/role.service";
+import { RoleService } from "@services";
 import {
 	BadRequestResponseSchema,
 	buildDatatableQueryParamsSchema,
@@ -10,7 +10,7 @@ import {
 	ResponseToolkit,
 	ServerErrorResponseSchema,
 	UnauthorizedResponseSchema,
-} from "@packages/toolkit";
+} from "@utils";
 import { FastifyInstance } from "fastify";
 import {
 	CreateRoleSchema,

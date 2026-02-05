@@ -1,4 +1,4 @@
-import { StrongPassword } from "@packages/default";
+import { StrongPassword } from "@fastify-libs";
 import { z } from "zod";
 
 export const UserResponseSchema = z.object({

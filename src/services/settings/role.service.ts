@@ -1,13 +1,12 @@
-import { UnprocessableEntityError } from "packages/error/custom.errors";
-import { DatatableType } from "packages/types/datatable";
-import { PaginationResponse } from "packages/types/pagination";
-import { db, permissionsTable } from "@postgres/index";
-import { inArray } from "drizzle-orm";
+import { UnprocessableEntityError } from "@fastify-libs";
 import {
+	DatatableType,
+	PaginationResponse,
 	RoleDetail,
 	RoleList,
-	RoleRepository,
-} from "@infra/postgres/repositories";
+} from "@types";
+import { db, permissionsTable, RoleRepository } from "@database";
+import { inArray } from "drizzle-orm";
 import { injectable } from "tsyringe";
 
 @injectable()
