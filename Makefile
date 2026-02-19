@@ -1,4 +1,4 @@
-.PHONY: help install dev-api build-api start-api dev-server build-server start-server dev-worker build-worker start-worker dev-all build-all start-all lint lint-fix format typecheck db-generate db-migrate db-push db-pull db-studio db-drop db-seed db-clickhouse-migrate db-clickhouse-status fresh reset
+.PHONY: help install dev build start lint lint-fix format typecheck db-generate db-migrate db-push db-pull db-studio db-drop db-seed db-clickhouse-migrate db-clickhouse-status fresh reset
 
 # Default target
 help:
@@ -8,22 +8,13 @@ help:
 	@echo "    install             - Install dependencies"
 	@echo ""
 	@echo "  Development:"
-	@echo "    dev-api             - Start API development server with hot reload"
-	@echo "    dev-server          - Start SERVER development server with hot reload"
-	@echo "    dev-worker          - Start WORKER development with hot reload"
-	@echo "    dev-all             - Run server and worker in dev mode concurrently"
+	@echo "    dev             	   - Run dev server with hot reload"
 	@echo ""
 	@echo "  Build:"
-	@echo "    build-api           - Build the API application"
-	@echo "    build-server        - Build the SERVER application"
-	@echo "    build-worker        - Build the WORKER application"
-	@echo "    build-all           - Build server and worker concurrently"
+	@echo "    build           	   - Build the application"
 	@echo ""
 	@echo "  Production:"
-	@echo "    start-api           - Start the API production server"
-	@echo "    start-server        - Start the SERVER production server"
-	@echo "    start-worker        - Start the WORKER production service"
-	@echo "    start-all           - Run server and worker in production concurrently"
+	@echo "    start               - Start the production server"
 	@echo ""
 	@echo "  Code Quality:"
 	@echo "    lint                - Run ESLint"
@@ -51,39 +42,20 @@ help:
 install:
 	bun install
 
-# Development commands
-dev-api:
-	bun run dev:api
-
-build-api:
-	bun run build:api
-
-start-api:
-	bun run start:api
-
-dev-server:
-	bun run dev:server
-
-build-server:
-	bun run build:server
-
-start-server:
-	bun run start:server
-
-dev-worker:
-	bun run dev:worker
-
-build-worker:
-	bun run build:worker
-
-start-worker:
-	bun run start:worker
+dev:
+	bun run dev
 
 dev-all:
 	bun run dev:all
 
+build:
+	bun run build
+
 build-all:
 	bun run build:all
+
+start:
+	bun run start
 
 start-all:
 	bun run start:all
