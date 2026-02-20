@@ -7,18 +7,17 @@
 		"name": "Aolus Software"
 	},
 	"scripts": {
-		"dev": "bun run --hot --watch ./src/serve.ts",
-		"dev:worker": "bun run --hot --watch ./src/bull/index.ts\t",
-		"dev:all": "concurrently \"bun run dev\" \"bun run dev:worker\"",
-		"build": "bun run tsc && bun build ./src/serve.ts --outdir=dist/server --target=node",
-		"build:worker": "bun build ./src/bull/index.ts --outdir=dist/bull --target=node",
-		"build:all": "concurrently \"bun run build\" \"bun run build:worker\"",
-		"start": "bun run ./dist/server/src/serve.js",
-		"start:worker": "bun run ./dist/bull/index.js",
-		"start:all": "concurrently \"bun run start\" \"bun run start:worker\"",
+		"dev": "concurrently --kill-others-on-fail --prefix-colors \"bgBlue.bold,bgMagenta.bold\" --names \"API,WORKER\" \"bun run dev:server\" \"bun run dev:worker\"",
+		"dev:server": "bun run --hot --watch ./src/serve.ts",
+		"dev:worker": "bun run --hot --watch ./src/bull/index.ts",
+		"build": "bun run tsc && bun build ./src/serve.ts --target=node --outdir=./dist/src --format=cjs",
+		"start": "concurrently --kill-others-on-fail --prefix-colors \"bgGreen.bold,bgMagenta.bold\" --names \"API,WORKER\" \"bun run start:server\" \"bun run start:worker\"",
+		"start:server": "bun run ./dist/src/serve.js",
+		"start:worker": "bun run ./dist/src/bull/index.js",
 		"lint": "bun run eslint . --ext .ts,.js",
 		"lint:fix": "bun run eslint . --ext .ts,.js --fix",
 		"format": "bun run prettier --write .",
+		"typecheck": "bun run tsc --noEmit",
 		"prepare": "husky install",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
@@ -28,8 +27,7 @@
 		"db:drop": "drizzle-kit drop",
 		"db:seed": "bun run src/libs/database/seed/index.ts",
 		"db:clickhouse:migrate": "bun run src/libs/database/clickhouse/scripts/migrate.ts migrate",
-		"db:clickhouse:status": "bun run src/libs/database/clickhouse/scripts/migrate.ts status",
-		"typecheck": "bun run tsc --noEmit"
+		"db:clickhouse:status": "bun run src/libs/database/clickhouse/scripts/migrate.ts status"
 	},
 	"devDependencies": {
 		"@types/bcryptjs": "^3.0.0",

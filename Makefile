@@ -1,4 +1,4 @@
-.PHONY: help install dev build start lint lint-fix format typecheck db-generate db-migrate db-push db-pull db-studio db-drop db-seed db-clickhouse-migrate db-clickhouse-status fresh reset
+.PHONY: help install dev dev-server dev-worker build start start-server start-worker lint lint-fix format typecheck db-generate db-migrate db-push db-pull db-studio db-drop db-seed db-clickhouse-migrate db-clickhouse-status fresh reset
 
 # Default target
 help:
@@ -8,13 +8,17 @@ help:
 	@echo "    install             - Install dependencies"
 	@echo ""
 	@echo "  Development:"
-	@echo "    dev             	   - Run dev server with hot reload"
+	@echo "    dev                 - Start server and worker with hot reload"
+	@echo "    dev-server          - Start API server only with hot reload"
+	@echo "    dev-worker          - Start worker only with hot reload"
 	@echo ""
 	@echo "  Build:"
-	@echo "    build           	   - Build the application"
+	@echo "    build               - Build the application"
 	@echo ""
 	@echo "  Production:"
-	@echo "    start               - Start the production server"
+	@echo "    start               - Start server and worker"
+	@echo "    start-server        - Start API server only"
+	@echo "    start-worker        - Start worker only"
 	@echo ""
 	@echo "  Code Quality:"
 	@echo "    lint                - Run ESLint"
@@ -45,20 +49,23 @@ install:
 dev:
 	bun run dev
 
-dev-all:
-	bun run dev:all
+dev-server:
+	bun run dev:server
+
+dev-worker:
+	bun run dev:worker
 
 build:
 	bun run build
 
-build-all:
-	bun run build:all
-
 start:
 	bun run start
 
-start-all:
-	bun run start:all
+start-server:
+	bun run start:server
+
+start-worker:
+	bun run start:worker
 
 # Code quality
 lint:
