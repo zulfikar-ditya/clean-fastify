@@ -82,15 +82,15 @@ When adding a new service: decorate with `@injectable()`, declare dependencies a
 
 `tsconfig.json` defines aliases that match the `libs/` layout — use them instead of relative paths:
 
-| Alias | Resolves to |
-|---|---|
-| `@config` | `src/libs/config` |
-| `@database` | `src/libs/database` (re-exports drizzle `db`, repositories, schema tables, RedisClient) |
-| `@fastify-libs` | `src/libs/fastify` (re-exports DI decorators, error classes, plugin barrel) |
-| `@cache` | `src/libs/cache` |
-| `@utils` | `src/libs/utils` (flat export — date, number, string, hash, encrypt, response, logger, datatable) |
-| `@types` | `src/libs/types` |
-| `@routes` / `@services` / `@bull` | route handlers, services, queue definitions |
+| Alias                             | Resolves to                                                                                       |
+| --------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `@config`                         | `src/libs/config`                                                                                 |
+| `@database`                       | `src/libs/database` (re-exports drizzle `db`, repositories, schema tables, RedisClient)           |
+| `@fastify-libs`                   | `src/libs/fastify` (re-exports DI decorators, error classes, plugin barrel)                       |
+| `@cache`                          | `src/libs/cache`                                                                                  |
+| `@utils`                          | `src/libs/utils` (flat export — date, number, string, hash, encrypt, response, logger, datatable) |
+| `@types`                          | `src/libs/types`                                                                                  |
+| `@routes` / `@services` / `@bull` | route handlers, services, queue definitions                                                       |
 
 ### Request lifecycle for protected routes
 
